@@ -1,6 +1,6 @@
 /**
- * Prompt templates for generating Magic Words and Tension Seeds
- * These can be easily modified to adjust the tone, style, and output format
+ * 用于生成魔法词和张力种子的提示词模板
+ * 这些模板可以轻松修改以调整语调、风格和输出格式
  */
 
 export function getMagicWordPrompt(
@@ -9,48 +9,49 @@ export function getMagicWordPrompt(
   temperature: "low" | "medium" | "high"
 ): string {
   const temperatureGuidance = {
-    low: "Be conservative and practical. Focus on well-established, proven terminology.",
-    medium: "Balance creativity with practicality. Mix conventional and novel approaches.",
-    high: "Be highly creative and unconventional. Push boundaries with unexpected word choices.",
+    low: "保守实用。专注于成熟的、经过验证的术语。",
+    medium: "平衡创意与实用性。混合传统和新颖的方法。",
+    high: "高度创新和非常规。用意想不到的词汇选择突破界限。",
   };
 
-  return `You are an expert in prompt engineering and creative AI interaction. Your task is to generate 3-5 "Magic Words" - powerful keywords or short phrases that can shape the direction and tone of AI outputs.
+  return `你是提示词工程和创意AI交互的专家。你的任务是生成3-5个"魔法词" - 能够塑造AI输出方向和语调的强力关键词或短语。
 
-**Task Description:**
+**任务描述：**
 ${taskDescription}
 
-**Style Intent:**
-${styleIntent || "Not specified - use your judgment"}
+**风格意图：**
+${styleIntent || "未指定 - 请自行判断"}
 
-**Creative Approach:**
+**创意方法：**
 ${temperatureGuidance[temperature]}
 
-**Instructions:**
-Generate 3-5 magic words that would be useful for this task. For each magic word:
-1. Provide the word or short phrase (2-4 words max)
-2. Explain HOW this word influences AI output direction
-3. Give a concrete example prompt snippet showing the word in context
+**指示：**
+为此任务生成3-5个有用的魔法词。对于每个魔法词：
+1. 提供词语或短语（最多2-4个词）
+2. 解释这个词如何影响AI输出方向
+3. 给出一个具体的提示词片段示例，展示该词在上下文中的使用
 
-**Output Format (JSON):**
-Return a JSON object with this exact structure:
+**输出格式（JSON）：**
+返回具有此确切结构的JSON对象：
 {
   "magicWords": [
     {
-      "word": "The magic word or phrase",
-      "explanation": "A clear explanation of how this word shapes AI output",
-      "exampleSnippet": "A complete example prompt snippet demonstrating usage"
+      "word": "魔法词或短语",
+      "explanation": "清楚解释这个词如何塑造AI输出",
+      "exampleSnippet": "一个完整的示例提示词片段，展示用法"
     }
   ]
 }
 
-**Guidelines:**
-- Magic words should be evocative and purposeful
-- Explanations should be practical and specific
-- Example snippets should be realistic and immediately usable
-- Vary the type of magic words (structural, tonal, stylistic, conceptual)
-- Make them relevant to the task description
+**准则：**
+- 魔法词应该富有启发性和目的性
+- 解释应该实用且具体
+- 示例片段应该真实且可立即使用
+- 变化魔法词的类型（结构性、语调性、风格性、概念性）
+- 使其与任务描述相关
+- 所有内容必须用中文生成
 
-Return ONLY the JSON object, no additional text.`;
+仅返回JSON对象，无需额外文本。`;
 }
 
 export function getTensionSeedPrompt(
@@ -59,49 +60,50 @@ export function getTensionSeedPrompt(
   temperature: "low" | "medium" | "high"
 ): string {
   const temperatureGuidance = {
-    low: "Generate grounded, practical tension seeds with clear real-world applications.",
-    medium: "Balance provocative ideas with actionable insights. Mix abstract and concrete.",
-    high: "Be bold and provocative. Challenge assumptions and explore unexpected angles.",
+    low: "生成扎实、实用的张力种子，具有明确的现实应用。",
+    medium: "平衡挑衅性想法与可操作的见解。混合抽象和具体。",
+    high: "大胆且具有挑衅性。挑战假设并探索意想不到的角度。",
   };
 
-  return `You are a creative strategist specializing in generative tension and ideation. Your task is to create "Tension Seeds" - provocative, Tweet-like statements that capture creative friction and spark new thinking.
+  return `你是专注于生成张力和创意的创意策略师。你的任务是创建"张力种子" - 具有挑衅性的、类似推文的陈述，捕捉创意摩擦并激发新思考。
 
-**Theme:**
+**主题：**
 ${theme}
 
-**Tension Axes:**
+**张力轴：**
 ${tensionAxes.map((axis, i) => `${i + 1}. ${axis}`).join('\n')}
 
-**Creative Approach:**
+**创意方法：**
 ${temperatureGuidance[temperature]}
 
-**Instructions:**
-Generate 3-5 tension seeds based on the theme and tension axes. Each seed should:
-1. Be a single, punchy sentence (like a great tweet)
-2. Create productive tension or challenge assumptions
-3. Be visually evocative and memorable
-4. Include 2 follow-up questions that help explore the seed's implications
+**指示：**
+基于主题和张力轴生成3-5个张力种子。每个种子应该：
+1. 是一个单独的、有力的句子（像一条优秀的推文）
+2. 创造富有成效的张力或挑战假设
+3. 具有视觉冲击力且令人难忘
+4. 包括2个后续问题，帮助探索种子的含义
 
-**Output Format (JSON):**
-Return a JSON object with this exact structure:
+**输出格式（JSON）：**
+返回具有此确切结构的JSON对象：
 {
   "tensionSeeds": [
     {
-      "seedSentence": "A provocative, tweet-worthy statement",
+      "seedSentence": "一个具有挑衅性的、值得推特分享的陈述",
       "followUpQuestions": [
-        "First follow-up question to deepen exploration",
-        "Second follow-up question to expand thinking"
+        "第一个后续问题，深化探索",
+        "第二个后续问题，扩展思维"
       ]
     }
   ]
 }
 
-**Guidelines:**
-- Seed sentences should be punchy and memorable (under 20 words)
-- Create genuine tension between the axes provided
-- Follow-up questions should open new avenues of thought
-- Make it relevant to demos, articles, or product narratives
-- Be specific enough to be useful, general enough to inspire
+**准则：**
+- 种子句应该有力且令人难忘（少于20个词）
+- 在提供的轴之间创造真正的张力
+- 后续问题应该开辟新的思路
+- 使其与演示、文章或产品叙述相关
+- 足够具体以便实用，足够通用以激发灵感
+- 所有内容必须用中文生成
 
-Return ONLY the JSON object, no additional text.`;
+仅返回JSON对象，无需额外文本。`;
 }
