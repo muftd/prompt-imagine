@@ -1,106 +1,106 @@
-# Prompt Imagination Studio
+# 提示词想象工作室
 
-A creative prompt ideation tool inspired by Google TextFX that helps users generate "magic words" and "tension seeds" for AI prompt engineering.
+一款受Google TextFX启发的创意提示词构思工具，帮助用户生成"魔法词"和"张力种子"用于AI提示词工程。
 
-## Overview
+## 概述
 
-Prompt Imagination Studio is a web application that provides two creative modes:
+提示词想象工作室是一个网络应用，提供两种创意模式：
 
-1. **Magic Word Atelier**: Generates powerful keywords and phrases that shape AI output direction, complete with explanations and example prompt snippets
-2. **Tension Seeds Studio**: Creates provocative, tweet-worthy statements that capture creative friction, along with follow-up questions to deepen exploration
+1. **魔法词工坊**：生成能塑造AI输出方向的强力关键词和短语，配有解释和示例提示词片段
+2. **张力种子工作室**：创造富有挑衅性的、类似推文的陈述，捕捉创意摩擦，并附带后续问题深化探索
 
-The tool is designed as an "upstream flavoring workbench" - users come here to get inspiration and creative direction before crafting their full prompts in ChatGPT, Claude, or other AI tools.
+该工具被设计为"上游调味工作台" - 用户在这里获取灵感和创意方向，然后再到ChatGPT、Claude或其他AI工具中制作完整的提示词。
 
-## Architecture
+## 架构
 
-### Tech Stack
-- **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI
-- **Backend**: Express.js, TypeScript
-- **AI**: OpenAI GPT-5 via Replit AI Integrations (no API key required)
-- **State Management**: TanStack Query (React Query)
+### 技术栈
+- **前端**：React、TypeScript、Tailwind CSS、Shadcn UI
+- **后端**：Express.js、TypeScript
+- **AI**：通过Replit AI集成的OpenAI GPT-5（无需API密钥）
+- **状态管理**：TanStack Query（React Query）
 
-### Project Structure
+### 项目结构
 ```
 client/
   src/
     components/
-      magic-word-atelier.tsx      # Magic Word mode interface
-      tension-seeds-studio.tsx    # Tension Seeds mode interface
-      mode-card.tsx               # Mode switching cards
-      magic-word-card.tsx         # Output card for magic words
-      tension-seed-card.tsx       # Output card for tension seeds
-      temperature-control.tsx     # Temperature selection UI
-      ui/                         # Shadcn UI components
+      magic-word-atelier.tsx      # 魔法词模式界面
+      tension-seeds-studio.tsx    # 张力种子模式界面
+      mode-card.tsx               # 模式切换卡片
+      magic-word-card.tsx         # 魔法词输出卡片
+      tension-seed-card.tsx       # 张力种子输出卡片
+      temperature-control.tsx     # 温度选择UI
+      ui/                         # Shadcn UI组件
     pages/
-      home.tsx                    # Main application page
-    App.tsx                       # Root component with routing
-    index.css                     # Global styles and theme tokens
+      home.tsx                    # 主应用页面
+    App.tsx                       # 根组件与路由
+    index.css                     # 全局样式和主题标记
 server/
   lib/
-    openai.ts                     # OpenAI client configuration
-    prompts.ts                    # Prompt templates (easily customizable)
-  routes.ts                       # API endpoints
+    openai.ts                     # OpenAI客户端配置
+    prompts.ts                    # 提示词模板（易于自定义，中文内容生成）
+  routes.ts                       # API端点
 shared/
-  schema.ts                       # Shared TypeScript types and Zod schemas
+  schema.ts                       # 共享TypeScript类型和Zod模式
 ```
 
-## Features
+## 功能
 
-### Magic Word Atelier
-- Input: Task description, optional style intent, temperature/divergence control
-- Output: 3-5 magic words with:
-  - The word or phrase
-  - Explanation of how it influences AI output
-  - Example prompt snippet showing usage
-- One-click copy functionality for snippets
+### 魔法词工坊
+- 输入：任务描述、可选风格意图、温度/创意度控制
+- 输出：3-5个魔法词，包含：
+  - 词语或短语
+  - 解释其如何影响AI输出
+  - 展示用法的示例提示词片段
+- 一键复制功能
 
-### Tension Seeds Studio
-- Input: Theme, multiple tension axes, temperature/divergence control
-- Output: 3-5 tension seeds with:
-  - Provocative seed sentence (tweet-like)
-  - 2 follow-up questions for exploration
-- Dynamic tension axis management (add/remove)
-- One-click copy for seed sentences
+### 张力种子工作室
+- 输入：主题、多个张力轴、温度/创意度控制
+- 输出：3-5个张力种子，包含：
+  - 挑衅性种子句（类似推文）
+  - 2个后续探索问题
+- 动态张力轴管理（添加/删除）
+- 一键复制种子句
 
-## Design System
+## 设计系统
 
-### Color Themes
-The application uses mode-specific color themes inspired by Google TextFX:
+### 颜色主题
+应用使用受Google TextFX启发的模式特定颜色主题：
 
-- **Magic Word Atelier**: Green theme (sage, mint, forest)
-  - Creates a calm, growth-oriented atmosphere
-  - Primary: `hsl(145 65% 45%)` in light mode, `hsl(145 55% 55%)` in dark mode
+- **魔法词工坊**：绿色主题（鼠尾草绿、薄荷绿、森林绿）
+  - 营造平静、成长导向的氛围
+  - 主色：浅色模式 `hsl(145 65% 45%)`，深色模式 `hsl(145 55% 55%)`
 
-- **Tension Seeds Studio**: Purple/violet theme
-  - Creates an energetic, creative atmosphere
-  - Primary: `hsl(270 65% 55%)` in light mode, `hsl(270 60% 65%)` in dark mode
+- **张力种子工作室**：紫色/紫罗兰主题
+  - 营造充满活力、创意的氛围
+  - 主色：浅色模式 `hsl(270 65% 55%)`，深色模式 `hsl(270 60% 65%)`
 
-### Typography
-- Font Family: Inter (clean, modern sans-serif)
-- Monospace: JetBrains Mono (for code snippets)
-- Large, impactful titles (4xl-5xl) for mode names
-- Clear hierarchy with varying font weights and sizes
+### 排版
+- 字体系列：Inter（干净、现代的无衬线字体）
+- 等宽字体：JetBrains Mono（用于代码片段）
+- 大型、有影响力的标题（4xl-5xl）用于模式名称
+- 通过不同字重和大小建立清晰的层次结构
 
-### Layout
-- Responsive grid: 40% left (title/description), 60% right (input/output) on large screens
-- Card-based output with generous spacing
-- Smooth fade-in animations for generated content
+### 布局
+- 响应式网格：大屏幕上左侧40%（标题/描述），右侧60%（输入/输出）
+- 基于卡片的输出，间距宽敞
+- 生成内容的平滑淡入动画
 
-## API Endpoints
+## API端点
 
 ### POST /api/magic-words
-Generates magic words for a given task.
+生成魔法词。
 
-**Request:**
+**请求：**
 ```json
 {
-  "taskDescription": "string (min 10 chars)",
-  "styleIntent": "string (optional)",
+  "taskDescription": "string (最少10个字符)",
+  "styleIntent": "string (可选)",
   "temperature": "low" | "medium" | "high"
 }
 ```
 
-**Response:**
+**响应：**
 ```json
 {
   "magicWords": [
@@ -114,18 +114,18 @@ Generates magic words for a given task.
 ```
 
 ### POST /api/tension-seeds
-Generates tension seeds based on theme and tension axes.
+基于主题和张力轴生成张力种子。
 
-**Request:**
+**请求：**
 ```json
 {
-  "theme": "string (min 5 chars)",
-  "tensionAxes": ["string array (min 1)"],
+  "theme": "string (最少5个字符)",
+  "tensionAxes": ["string array (至少1个)"],
   "temperature": "low" | "medium" | "high"
 }
 ```
 
-**Response:**
+**响应：**
 ```json
 {
   "tensionSeeds": [
@@ -137,62 +137,65 @@ Generates tension seeds based on theme and tension axes.
 }
 ```
 
-## Customization Guide
+## 自定义指南
 
-### Modifying Prompt Templates
-To adjust the tone, style, or output format of generated content, edit the prompt templates in:
+### 修改提示词模板
+要调整生成内容的语调、风格或输出格式，请编辑：
 - `server/lib/prompts.ts`
 
-Key customization points:
-- `getMagicWordPrompt()`: Controls how magic words are generated
-- `getTensionSeedPrompt()`: Controls how tension seeds are generated
+关键自定义点：
+- `getMagicWordPrompt()`：控制魔法词的生成方式
+- `getTensionSeedPrompt()`：控制张力种子的生成方式
 
-Each template includes:
-- Temperature-based guidance (low/medium/high creativity)
-- Output format specifications (JSON structure)
-- Guidelines for the AI
+每个模板包括：
+- 基于温度的指导（低/中/高创意度）
+- 输出格式规范（JSON结构）
+- AI指南
+- 中文内容生成指令
 
-### Adjusting Color Themes
-Color variables are defined in `client/src/index.css`:
-- Light mode: `:root` section
-- Dark mode: `.dark` section
+### 调整颜色主题
+颜色变量定义在 `client/src/index.css`：
+- 浅色模式：`:root` 部分
+- 深色模式：`.dark` 部分
 
-Key variables:
-- `--magic`: Magic Word theme color
-- `--magic-light`: Light background for Magic mode
-- `--tension`: Tension Seeds theme color
-- `--tension-light`: Light background for Tension mode
+关键变量：
+- `--magic`：魔法词主题颜色
+- `--magic-light`：魔法模式的浅色背景
+- `--tension`：张力种子主题颜色
+- `--tension-light`：张力模式的浅色背景
 
-### Temperature Behavior
-The temperature control affects the creative approach:
-- **Low**: Conservative, practical, proven terminology
-- **Medium**: Balanced creativity and practicality
-- **High**: Highly creative, unconventional, boundary-pushing
+### 温度行为
+温度控制影响创意方法：
+- **低**：保守、实用、经过验证的术语
+- **中等**：平衡创意与实用性
+- **高**：高度创新、非常规、突破界限
 
-## Development
+## 开发
 
-### Running the Application
+### 运行应用
 ```bash
 npm run dev
 ```
-This starts both the Express backend and Vite frontend on the same port.
+同时启动Express后端和Vite前端在同一端口。
 
-### Environment Variables
-The application uses Replit AI Integrations, which automatically provides:
+### 环境变量
+应用使用Replit AI集成，自动提供：
 - `AI_INTEGRATIONS_OPENAI_BASE_URL`
 - `AI_INTEGRATIONS_OPENAI_API_KEY`
 
-No manual API key configuration is required.
+无需手动配置API密钥。
 
-## User Preferences
-- Clean, minimal interface with focus on content generation
-- TextFX-inspired design aesthetic with mode-specific color themes
-- Smooth transitions and animations
-- Mobile-responsive layout
-- Dark mode support
+## 用户偏好
+- 干净、简约的界面，专注于内容生成
+- 受TextFX启发的设计美学，带有模式特定颜色主题
+- 平滑的过渡和动画
+- 移动响应式布局
+- 深色模式支持
+- 完全中文界面和内容生成
 
-## Recent Changes
-- 2025-01-15: Initial implementation with Magic Word Atelier and Tension Seeds Studio
-- Both modes fully functional with OpenAI GPT-5 integration
-- Complete responsive design with dark mode support
-- One-click copy functionality for all generated content
+## 最近更改
+- 2025-01-15：初始实现，包含魔法词工坊和张力种子工作室
+- 两种模式完全功能化，集成OpenAI GPT-5
+- 完整响应式设计，支持深色模式
+- 所有生成内容的一键复制功能
+- 2025-01-15：将整个应用转换为中文环境，包括界面和生成内容
