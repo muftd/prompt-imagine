@@ -53,14 +53,14 @@ export function MagicWordAtelier() {
       setResults(data.magicWords);
       queryClient.invalidateQueries({ queryKey: ["/api/magic-words"] });
       toast({
-        title: "Magic words generated!",
-        description: `Created ${data.magicWords.length} magic words for your task.`,
+        title: "魔法词已生成！",
+        description: `为您的任务创建了 ${data.magicWords.length} 个魔法词。`,
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Generation failed",
-        description: error.message || "Failed to generate magic words. Please try again.",
+        title: "生成失败",
+        description: error.message || "无法生成魔法词，请重试。",
         variant: "destructive",
       });
     },
@@ -75,13 +75,13 @@ export function MagicWordAtelier() {
       <div className="lg:col-span-2 space-y-4">
         <div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
-            Magic Word
+            魔法词
           </h2>
           <h3 className="text-4xl md:text-5xl font-bold text-magic mb-6">
-            Atelier
+            工坊
           </h3>
           <p className="text-lg text-muted-foreground">
-            Give your task a sprinkle of magic words to shape the AI's creative direction
+            为您的任务添加魔法词，塑造AI的创意方向
           </p>
         </div>
       </div>
@@ -95,12 +95,12 @@ export function MagicWordAtelier() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium">
-                    Describe your task and context
+                    描述您的任务和上下文
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       data-testid="textarea-task-description"
-                      placeholder="Task: Create a product analysis for Claude Code Sub-Agent&#10;Context: For product managers, technical but accessible&#10;Goal: Help them understand the architecture and value proposition"
+                      placeholder="任务：为Claude代码助手创建产品分析&#10;上下文：面向产品经理，技术性但易懂&#10;目标：帮助他们理解架构和价值主张"
                       {...field}
                       className="min-h-32 md:min-h-40 resize-none text-base"
                       disabled={generateMutation.isPending}
@@ -117,12 +117,12 @@ export function MagicWordAtelier() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium">
-                    Style or intent (optional)
+                    风格或意图（可选）
                   </FormLabel>
                   <FormControl>
                     <Input
                       data-testid="input-style-intent"
-                      placeholder="e.g., Structured + zen-like, no PR fluff"
+                      placeholder="例如：结构化 + 禅意般，无PR废话"
                       {...field}
                       className="text-base"
                       disabled={generateMutation.isPending}
@@ -138,7 +138,7 @@ export function MagicWordAtelier() {
               name="temperature"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-medium">Divergence</FormLabel>
+                  <FormLabel className="text-base font-medium">创意度</FormLabel>
                   <FormControl>
                     <TemperatureControl
                       value={field.value}
@@ -161,10 +161,10 @@ export function MagicWordAtelier() {
               {generateMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Generating...
+                  生成中...
                 </>
               ) : (
-                "RUN"
+                "运行"
               )}
             </Button>
           </form>
@@ -173,7 +173,7 @@ export function MagicWordAtelier() {
         {results && results.length > 0 && (
           <div className="pt-8 animate-fade-in">
             <h3 className="text-xl font-semibold mb-6 text-foreground">
-              Magic Words
+              魔法词
             </h3>
             <div className="grid grid-cols-1 gap-6">
               {results.map((word, index) => (

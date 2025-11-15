@@ -16,14 +16,14 @@ export default function Home() {
           <div className="flex items-center gap-3 mb-8">
             <Sparkles className="w-8 h-8 text-primary" />
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-              Prompt Imagination Studio
+              提示词想象工作室
             </h1>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <ModeCard
               mode="magic"
-              title="Magic Word Atelier"
+              title="魔法词工坊"
               icon={Sparkles}
               isActive={activeMode === "magic"}
               onClick={() => setActiveMode("magic")}
@@ -31,7 +31,7 @@ export default function Home() {
             />
             <ModeCard
               mode="tension"
-              title="Tension Seeds Studio"
+              title="张力种子工作室"
               icon={Zap}
               isActive={activeMode === "tension"}
               onClick={() => setActiveMode("tension")}
