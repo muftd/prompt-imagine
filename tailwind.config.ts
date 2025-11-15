@@ -11,7 +11,6 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
-        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
@@ -81,6 +80,19 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+        // Mode-specific theme colors inspired by TextFX
+        magic: {
+          DEFAULT: "hsl(var(--magic) / <alpha-value>)",
+          foreground: "hsl(var(--magic-foreground) / <alpha-value>)",
+          light: "hsl(var(--magic-light) / <alpha-value>)",
+          dark: "hsl(var(--magic-dark) / <alpha-value>)",
+        },
+        tension: {
+          DEFAULT: "hsl(var(--tension) / <alpha-value>)",
+          foreground: "hsl(var(--tension-foreground) / <alpha-value>)",
+          light: "hsl(var(--tension-light) / <alpha-value>)",
+          dark: "hsl(var(--tension-dark) / <alpha-value>)",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -96,10 +108,15 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
       },
     },
   },
