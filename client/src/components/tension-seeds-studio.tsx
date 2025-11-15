@@ -55,14 +55,14 @@ export function TensionSeedsStudio() {
       setResults(data.tensionSeeds);
       queryClient.invalidateQueries({ queryKey: ["/api/tension-seeds"] });
       toast({
-        title: "Tension seeds generated!",
-        description: `Created ${data.tensionSeeds.length} tension seeds for your theme.`,
+        title: "张力种子已生成！",
+        description: `为您的主题创建了 ${data.tensionSeeds.length} 个张力种子。`,
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Generation failed",
-        description: error.message || "Failed to generate tension seeds. Please try again.",
+        title: "生成失败",
+        description: error.message || "无法生成张力种子，请重试。",
         variant: "destructive",
       });
     },
@@ -77,13 +77,13 @@ export function TensionSeedsStudio() {
       <div className="lg:col-span-2 space-y-4">
         <div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
-            Tension Seeds
+            张力种子
           </h2>
           <h3 className="text-4xl md:text-5xl font-bold text-tension mb-6">
-            Studio
+            工作室
           </h3>
           <p className="text-lg text-muted-foreground">
-            Inject creative tension into your ideas with provocative seeds and follow-up questions
+            为您的创意注入张力，通过富有挑衅性的种子和后续问题激发灵感
           </p>
         </div>
       </div>
@@ -96,11 +96,11 @@ export function TensionSeedsStudio() {
               name="theme"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-medium">Theme</FormLabel>
+                  <FormLabel className="text-base font-medium">主题</FormLabel>
                   <FormControl>
                     <Input
                       data-testid="input-theme"
-                      placeholder="e.g., Prompt as Protocol"
+                      placeholder="例如：提示词即协议"
                       {...field}
                       className="text-base"
                       disabled={generateMutation.isPending}
@@ -113,7 +113,7 @@ export function TensionSeedsStudio() {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <FormLabel className="text-base font-medium">Tension Axes</FormLabel>
+                <FormLabel className="text-base font-medium">张力轴</FormLabel>
                 <Button
                   type="button"
                   variant="outline"
@@ -124,7 +124,7 @@ export function TensionSeedsStudio() {
                   disabled={generateMutation.isPending}
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  Add Axis
+                  添加轴
                 </Button>
               </div>
               <div className="space-y-2">
@@ -139,7 +139,7 @@ export function TensionSeedsStudio() {
                           <FormControl>
                             <Input
                               data-testid={`input-tension-axis-${index}`}
-                              placeholder="e.g., Zen simplicity vs Engineering rigor"
+                              placeholder="例如：禅意简约 vs 工程严谨"
                               {...field}
                               className="text-base flex-1"
                               disabled={generateMutation.isPending}
@@ -172,7 +172,7 @@ export function TensionSeedsStudio() {
               name="temperature"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-medium">Divergence</FormLabel>
+                  <FormLabel className="text-base font-medium">创意度</FormLabel>
                   <FormControl>
                     <TemperatureControl
                       value={field.value}
@@ -195,10 +195,10 @@ export function TensionSeedsStudio() {
               {generateMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Generating...
+                  生成中...
                 </>
               ) : (
-                "RUN"
+                "运行"
               )}
             </Button>
           </form>
@@ -207,7 +207,7 @@ export function TensionSeedsStudio() {
         {results && results.length > 0 && (
           <div className="pt-8 animate-fade-in">
             <h3 className="text-xl font-semibold mb-6 text-foreground">
-              Tension Seeds
+              张力种子
             </h3>
             <div className="grid grid-cols-1 gap-6">
               {results.map((seed, index) => (
