@@ -24,6 +24,7 @@ export function TensionSeedsStudio() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
       theme: "",
       tensionAxes: [""],
@@ -186,7 +187,7 @@ export function TensionSeedsStudio() {
 
             <Button
               type="submit"
-              disabled={generateMutation.isPending}
+              disabled={generateMutation.isPending || !form.formState.isValid}
               data-testid="button-run-tension"
               className="w-full md:w-auto px-8 py-6 text-lg font-semibold rounded-full bg-tension hover:bg-tension/90 text-tension-foreground"
               size="lg"
@@ -203,7 +204,7 @@ export function TensionSeedsStudio() {
           </form>
         </Form>
 
-        {results.length > 0 && (
+        {results && results.length > 0 && (
           <div className="pt-8 animate-fade-in">
             <h3 className="text-xl font-semibold mb-6 text-foreground">
               Tension Seeds

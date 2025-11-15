@@ -27,6 +27,7 @@ export function MagicWordAtelier() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
       taskDescription: "",
       styleIntent: "",
@@ -152,7 +153,7 @@ export function MagicWordAtelier() {
 
             <Button
               type="submit"
-              disabled={generateMutation.isPending}
+              disabled={generateMutation.isPending || !form.formState.isValid}
               data-testid="button-run-magic"
               className="w-full md:w-auto px-8 py-6 text-lg font-semibold rounded-full bg-magic hover:bg-magic/90 text-magic-foreground"
               size="lg"
@@ -169,7 +170,7 @@ export function MagicWordAtelier() {
           </form>
         </Form>
 
-        {results.length > 0 && (
+        {results && results.length > 0 && (
           <div className="pt-8 animate-fade-in">
             <h3 className="text-xl font-semibold mb-6 text-foreground">
               Magic Words
