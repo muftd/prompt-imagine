@@ -8,9 +8,9 @@ interface TemperatureControlProps {
 }
 
 const temperatures = [
-  { value: "low" as const, label: "Low" },
-  { value: "medium" as const, label: "Medium" },
-  { value: "high" as const, label: "High" },
+  { value: "low" as const, label: "低" },
+  { value: "medium" as const, label: "中等" },
+  { value: "high" as const, label: "高" },
 ];
 
 export function TemperatureControl({

@@ -40,7 +40,7 @@ export function MagicWordCard({ magicWord, index }: MagicWordCardProps) {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">
-            Example Prompt Snippet
+            示例提示词片段
           </p>
           <Button
             variant="ghost"
@@ -52,12 +52,12 @@ export function MagicWordCard({ magicWord, index }: MagicWordCardProps) {
             {copied ? (
               <>
                 <Check className="w-4 h-4 mr-1" />
-                Copied!
+                已复制！
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4 mr-1" />
-                Copy
+                复制
               </>
             )}
           </Button>

@@ -40,12 +40,12 @@ export function TensionSeedCard({ tensionSeed, index }: TensionSeedCardProps) {
           {copied ? (
             <>
               <Check className="w-4 h-4 mr-1" />
-              Copied!
+              已复制！
             </>
           ) : (
             <>
               <Copy className="w-4 h-4 mr-1" />
-              Copy
+              复制
             </>
           )}
         </Button>
@@ -53,7 +53,7 @@ export function TensionSeedCard({ tensionSeed, index }: TensionSeedCardProps) {
 
       <div className="space-y-2">
         <p className="text-sm font-medium text-muted-foreground">
-          Follow-up Questions
+          后续问题
         </p>
         <ul className="space-y-2">
           {tensionSeed.followUpQuestions.map((question, qIndex) => (
