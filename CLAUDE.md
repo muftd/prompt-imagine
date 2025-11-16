@@ -1,10 +1,56 @@
 # CLAUDE.md - AI Assistant Guide for Prompt Imagination Studio
 
+> **角色定位**：你是本仓库的协作开发者（Collaborator）。
+> **用户偏好**：所有与用户的交流均使用**中文**（包括解释、文档、回答问题）。
+> **目标**：在最小沟通成本下，稳定、高质量地推进代码、设计与重构工作。
+> **原则**：清晰意图 > 一致模式 > 可持续维护。
+
 ## Project Overview
 
 **Prompt Imagination Studio (提示词想象工作室)** is a creative prompt ideation tool inspired by Google TextFX. It helps users generate "Magic Words" and "Tension Seeds" for AI prompt engineering. The application is fully localized in Chinese and serves as an "upstream flavor workbench" - users get inspiration and creative direction here before crafting full prompts in ChatGPT, Claude, or other AI tools.
 
 **Key Concept:** This tool is NOT a full prompt builder. It's designed to spark creativity and provide starting points that users then develop into complete prompts in their AI tool of choice.
+
+## Development Philosophy（开发哲学）
+
+### Core Beliefs（核心信念）
+
+1. **增量优先（Incremental Progress）**
+   - 小步提交，每次提交必须可运行、可测试、可回滚
+   - 避免大规模重构，优先可验证的小改动
+
+2. **从现有模式学习（Learn From Existing Code）**
+   - 先阅读、理解、模仿已有实现，再提出改动
+   - 找出 3 个相似实现，识别公共模式
+   - 延续同样的库/工具/命名习惯
+
+3. **务实而非教条（Pragmatic Over Dogmatic）**
+   - 选择最简单、最稳妥、最可维护的方案
+   - 延迟抽象，避免过度设计
+   - 如果需要额外解释，说明它还不够简单
+
+4. **意图清晰优先于聪明代码（Clear Intent > Clever Code）**
+   - 代码必须"无惊喜"，任何隐式魔法都不允许
+   - 显式 > 隐式（数据流、依赖、边界必须明确表示）
+
+### Decision Framework（决策框架）
+
+当出现多个可行方案时，按以下优先级选择：
+
+1. **可测试性（Testability）** - 能否轻松编写测试？
+2. **可读性（Readability）** - 半年后是否仍易懂？
+3. **一致性（Consistency）** - 符合当前项目既有模式？
+4. **简洁性（Simplicity）** - 是否是最简单的解决方案？
+5. **可逆性（Reversibility）** - 改起来是否容易？
+
+### Permission Rules（权限策略）
+
+**除以下两类高风险操作外，其余行为均无需用户确认：**
+
+1. 删除文件
+2. 数据库写操作（迁移、变更、销毁）
+
+其余所有修改（重构、写代码、添加文件、安装依赖）均可直接执行。
 
 ## Technology Stack
 
@@ -302,6 +348,67 @@ Three-level creativity selector (低/中等/高).
 
 ## Development Workflows
 
+### Planning & Staging（规划与分阶段）
+
+**复杂任务应分解为 3~5 个阶段，写入 `IMPLEMENTATION_PLAN.md`：**
+
+```markdown
+## Stage N: [名称]
+Goal: [该阶段要交付的结果]
+Success Criteria: [可验证的标准]
+Tests: [必须覆盖的测试]
+Status: Not Started | In Progress | Complete
+```
+
+- 随进展更新 `Status`
+- 所有阶段完成后删除该文件
+
+### Implementation Loop（实现循环）
+
+**标准 TDD 工作流程：**
+
+1. **理解（Understand）**
+   - 阅读相关模块，识别既有模式
+   - 找到 3 个相似实现作为参考
+
+2. **写测试（Test — Red）**
+   - 先写失败的测试用例
+   - 明确期望的行为
+
+3. **最小实现（Implement — Green）**
+   - 用最少代码让测试通过
+   - 不追求完美，只求可运行
+
+4. **重构（Refactor）**
+   - 保持测试通过前提下清理结构
+   - 消除重复，提升可读性
+
+5. **提交（Commit）**
+   - 提交信息必须说明"为什么这么改"
+   - 每次提交保持可运行状态
+
+### Max 3 Attempts Rule（三次失败即停）
+
+**任何问题尝试 3 次失败后立即停止，按以下步骤处理：**
+
+1. **记录失败**
+   - 你尝试了哪些方案
+   - 具体报错或行为
+   - 你认为的失败原因
+
+2. **调查可替代路径**
+   - 找到 2-3 个类似实现
+   - 总结它们的关键差异
+
+3. **校验基本假设**
+   - 是否抽象层级太高/太低？
+   - 是否可以拆小？
+   - 是否有更简单的路径？
+
+4. **换角度重新进入**
+   - 换库、换模式
+   - 去掉抽象，用显式实现替代隐式技巧
+
 ### Running the Application
 
 **Development Mode:**
@@ -348,6 +455,24 @@ npm run db:push
 - Currently minimal database usage (mostly in-memory)
 
 ## Code Patterns & Conventions
+
+### Architecture Principles（架构原则）
+
+1. **Composition > Inheritance（组合优于继承）**
+   - 优先使用组合而非继承
+   - 使用 React hooks 和 HOC 实现功能复用
+
+2. **Dependency Injection（依赖注入）**
+   - 通过 props 传递依赖，提升可测试性
+   - 避免在组件内部直接实例化外部服务
+
+3. **Explicit > Implicit（显式优于隐式）**
+   - 数据流、依赖、边界必须明确表示
+   - 避免隐式的全局状态或魔法行为
+
+4. **Single Responsibility（单一职责）**
+   - 每个函数/组件只承担一个职责
+   - 文件长度超过 300 行应考虑拆分
 
 ### Type Safety
 **Location:** `shared/schema.ts`
@@ -454,6 +579,12 @@ export function cn(...inputs: ClassValue[]) {
 ### Error Handling Pattern
 **Location:** `server/routes.ts:35` (example)
 
+**Core Principles:**
+1. **快速失败（Fail Fast）** - 尽早发现并报告错误
+2. **明确错误上下文** - 错误信息应包含足够的调试信息
+3. **在合适层级处理** - 错误应在最合适的层级处理
+4. **绝不吞掉异常** - 不允许静默失败
+
 **Defensive AI Response Parsing:**
 ```typescript
 // Try to salvage partial data even if AI response is malformed
@@ -465,6 +596,8 @@ try {
   );
 } catch (error) {
   // Fallback: try to extract any valid JSON fragments
+  console.error('AI response parsing failed:', error);
+  throw new Error('No valid magic words generated');
 }
 
 if (validWords.length === 0) {
@@ -560,6 +693,34 @@ export function Component({ value, onChange }: ComponentProps) {
 - Test component rendering and interactions
 - Mock OpenAI API calls to avoid costs
 
+**Testing Standards（测试标准）：**
+
+1. **测试行为，不是实现细节**
+   - 关注组件的输出和副作用
+   - 避免测试内部状态和私有方法
+
+2. **测试名称必须描述场景**
+   ```typescript
+   // Good
+   test('displays error message when API call fails')
+
+   // Bad
+   test('test error handling')
+   ```
+
+3. **优先使用已有的测试工具/辅助函数**
+   - 保持测试风格一致
+   - 减少重复代码
+
+4. **测试必须可重复（deterministic）**
+   - 避免依赖时间、随机数
+   - Mock 外部依赖（API、时间等）
+
+5. **每个功能都应有测试覆盖**
+   - 正常路径（happy path）
+   - 边界情况（edge cases）
+   - 错误处理（error cases）
+
 ### Performance Considerations
 
 1. **AI API Calls:**
@@ -645,6 +806,62 @@ npm update
 - Verify all imports use correct aliases
 - Check for circular dependencies
 
+## Quality Gates & Enforcement（质量门槛与强制规则）
+
+### Definition of Done（完成定义）
+
+**每个功能/修复必须满足以下标准才算完成：**
+
+- [ ] 测试编写并全部通过（如果项目已有测试套件）
+- [ ] 无 TypeScript 类型错误
+- [ ] 无 lint / format 警告
+- [ ] 符合既有代码模式和风格
+- [ ] 提交信息清晰，说明"为什么"而非"做了什么"
+- [ ] 实现满足原始需求
+- [ ] 无裸露的 TODO（除非有对应 issue 编号）
+- [ ] 代码可运行，无明显 bug
+
+### Commit Standards（提交标准）
+
+**提交前 Checklist：**
+
+1. 运行格式化工具（如果配置了 Prettier）
+2. 手动审查 `git diff`，确保无意外修改
+3. 检查命名、结构是否与项目一致
+4. 确保提交信息描述意图
+
+**提交信息格式：**
+```
+简短的一句话总结（<50 字符）
+
+详细说明（如果需要）：
+- 为什么需要这个改动？
+- 解决了什么问题？
+- 有什么潜在影响？
+```
+
+### Critical Rules（禁令与强制）
+
+**绝对禁止（NEVER）：**
+
+1. ❌ 使用 `--no-verify` 绕过 Git hooks
+2. ❌ 注释掉或跳过测试以让 CI 通过
+3. ❌ 提交无法运行的代码
+4. ❌ 不阅读已有代码就做出假设
+5. ❌ 引入隐式魔法、黑箱行为
+6. ❌ 硬编码敏感信息（API keys、密码等）
+7. ❌ 直接修改 `node_modules` 中的文件
+
+**必须遵守（ALWAYS）：**
+
+1. ✅ 小步提交、保持可运行状态
+2. ✅ 随进展更新 `IMPLEMENTATION_PLAN.md`（如果使用）
+3. ✅ 遇到阻塞 3 次必须停下来重新思考
+4. ✅ 先找现有实现，再写自己的
+5. ✅ 所有面向用户的文本使用中文
+6. ✅ 保持代码格式一致（使用项目配置的工具）
+7. ✅ 添加有意义的注释（解释"为什么"，不是"做什么"）
+
 ## Recent Changes & History
 
 **2025-01-15:**
@@ -695,20 +912,52 @@ npm update
 - Design principles in `design_guidelines.md`
 - Chinese documentation in `replit.md`
 
+## Tool Usage Guidelines（工具使用指南）
+
+### Context7 MCP Integration
+
+**当需要以下信息时，自动使用 Context7 MCP 工具（无需用户明示）：**
+
+1. 第三方库的 API 文档
+2. 框架的最新特性和最佳实践
+3. 技术规范和标准
+4. 依赖包的使用方法
+
+**示例场景：**
+- 查询 TanStack Query 的最新 API
+- 了解 Shadcn UI 组件的 props
+- 查看 Zod 验证的高级用法
+- 学习 Vite 插件的配置方式
+
+### Project-Specific Tools
+
+**本项目特定的工具链：**
+- **Vite** - 前端构建工具
+- **esbuild** - 后端打包工具
+- **tsx** - TypeScript 执行器
+- **Drizzle Kit** - 数据库迁移工具
+
 ## Contact & Contribution
 
 This codebase is designed for easy modification and extension. When contributing:
 
-1. Maintain the Chinese language UI
-2. Follow existing component patterns
-3. Add Zod schemas for new data structures
-4. Update this CLAUDE.md with significant changes
-5. Test both Magic Words and Tension Seeds modes
-6. Verify dark mode compatibility
-7. Ensure mobile responsiveness
+1. **所有与用户的交流使用中文**
+2. Maintain the Chinese language UI
+3. Follow existing component patterns
+4. Add Zod schemas for new data structures
+5. Update this CLAUDE.md with significant changes
+6. Test both Magic Words and Tension Seeds modes
+7. Verify dark mode compatibility
+8. Ensure mobile responsiveness
+
+**Collaboration Style（协作风格）：**
+- 增量开发，小步快跑
+- 主动学习现有代码模式
+- 遇到阻塞及时沟通
+- 保持代码简洁可维护
 
 ---
 
 **Last Updated:** 2025-01-16
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Maintained by:** AI-assisted development with Claude
