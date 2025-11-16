@@ -28,9 +28,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getMagicWordPrompt(taskDescription, styleIntent, temperature);
 
-      // 调用OpenRouter - 使用Claude 3 Opus以获得更好的中文生成能力
+      // 调用OpenRouter - 使用Claude Haiku 4.5以获得更快的响应速度
       const response = await openai.chat.completions.create({
-        model: "anthropic/claude-3-opus",
+        model: "anthropic/claude-haiku-4.5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
         max_tokens: 4096,
@@ -119,9 +119,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getTensionSeedPrompt(theme, validAxes, temperature);
 
-      // 调用OpenRouter - 使用Claude 3 Opus以获得更好的中文生成能力
+      // 调用OpenRouter - 使用Claude Haiku 4.5以获得更快的响应速度
       const response = await openai.chat.completions.create({
-        model: "anthropic/claude-3-opus",
+        model: "anthropic/claude-haiku-4.5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
         max_tokens: 4096,
