@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Zap, Plus, X, Lightning } from "lucide-react";
+import { Loader2, Zap, Plus, X, Bolt } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -244,7 +244,7 @@ export function TensionSeedsStudio() {
                         </>
                       ) : (
                         <>
-                          <Lightning className="w-5 h-5 mr-2" />
+                          <Bolt className="w-5 h-5 mr-2" />
                           生成种子
                         </>
                       )}
