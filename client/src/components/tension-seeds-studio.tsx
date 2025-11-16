@@ -113,20 +113,32 @@ export function TensionSeedsStudio() {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <FormLabel className="text-base font-medium">张力轴</FormLabel>
+                <div>
+                  <FormLabel className="text-base font-medium">张力轴</FormLabel>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    添加多个对立或冲突的概念轴（至少一个）
+                  </p>
+                </div>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="default"
                   size="sm"
                   onClick={() => append("")}
                   data-testid="button-add-axis"
                   className="hover-elevate"
-                  disabled={generateMutation.isPending}
+                  disabled={generateMutation.isPending || fields.length >= 5}
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   添加轴
                 </Button>
               </div>
+              {fields.length === 0 && (
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    请点击"添加轴"按钮来创建张力轴
+                  </p>
+                </div>
+              )}
               <div className="space-y-2">
                 {fields.map((field, index) => (
                   <FormField

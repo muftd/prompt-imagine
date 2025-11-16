@@ -28,13 +28,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getMagicWordPrompt(taskDescription, styleIntent, temperature);
 
-      // Call OpenAI
-      // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+      // 调用OpenRouter - 使用Claude 3 Opus以获得更好的中文生成能力
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "anthropic/claude-3-opus",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 8192,
+        max_tokens: 4096,
       });
 
       const content = response.choices[0]?.message?.content;
@@ -108,13 +107,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getTensionSeedPrompt(theme, validAxes, temperature);
 
-      // Call OpenAI
-      // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+      // 调用OpenRouter - 使用Claude 3 Opus以获得更好的中文生成能力
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "anthropic/claude-3-opus",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 8192,
+        max_tokens: 4096,
       });
 
       const content = response.choices[0]?.message?.content;
