@@ -5,6 +5,68 @@
 > **目标**：在最小沟通成本下，稳定、高质量地推进代码、设计与重构工作。
 > **原则**：清晰意图 > 一致模式 > 可持续维护。
 
+## Role Division（角色分工）
+
+### Claude Code（AI 助手职责）
+本项目采用 **Claude Code + Replit** 协作模式，职责分工如下：
+
+**Claude Code 负责：**
+- ✅ 需求分析与澄清
+- ✅ 代码实现（前端、后端、配置文件）
+- ✅ Git 提交与分支管理
+- ✅ 代码审查与重构
+- ✅ 文档更新（CLAUDE.md、README 等）
+- ✅ 依赖管理（修改 `package.json`）
+
+**Replit 平台负责：**
+- ✅ 运行开发服务器 `npm run dev`
+- ✅ 安装依赖 `npm install`
+- ✅ 构建生产版本 `npm run build`
+- ✅ 启动生产服务器 `npm run start`
+- ✅ 数据库迁移 `npm run db:push`
+- ✅ 环境变量管理（Secrets 配置）
+- ✅ 实际部署和对外网站更新
+- ✅ 运行时错误监控和日志查看
+- ✅ 浏览器测试和功能验证
+
+### 路由判断（何时提醒用户去 Replit）
+
+| 用户需求场景 | AI 助手的建议 |
+|------------|--------------|
+| "帮我测试一下这个功能" | ⚠️ **请在 Replit 上运行 `npm run dev` 并在浏览器中测试** |
+| "看看网站现在是什么样" | ⚠️ **请在 Replit 的 Webview 或部署 URL 中查看实际效果** |
+| "有报错了，显示..." | ⚠️ **这是运行时错误，请在 Replit 控制台查看完整日志** |
+| "环境变量没配置" | ⚠️ **请在 Replit 的 Secrets 中配置环境变量** |
+| "数据库连不上" | ⚠️ **请检查 Replit 的 PostgreSQL 配置和连接状态** |
+| "部署到生产环境" | ⚠️ **在 Replit 上运行 `npm run build && npm run start`** |
+| "安装了新依赖包" | ⚠️ **代码已提交，请在 Replit 运行 `npm install`** |
+
+**AI 助手直接处理的场景：**
+- 添加/修改功能代码
+- 调整样式和布局
+- 重构代码结构
+- 更新 API 接口
+- 修改提示词模板
+- 添加/更新文档
+
+### 典型协作流程
+
+```
+用户: "我想添加一个导出 JSON 的功能"
+     ↓
+AI: [分析需求] → [编写代码] → [提交推送]
+    "✅ 代码已完成并推送。请在 Replit 上拉取最新代码并运行 npm run dev 测试"
+     ↓
+用户: 在 Replit 测试，发现问题
+     ↓
+AI: [根据反馈修复] → [再次提交推送]
+    "✅ 已修复。请重新测试"
+     ↓
+用户: 测试通过，在 Replit 执行部署
+```
+
+**重要提醒：** AI 助手不应尝试运行服务器、执行构建命令或查看运行时日志，这些操作只能在 Replit 环境中完成。
+
 ## Project Overview
 
 **Prompt Imagination Studio (提示词想象工作室)** is a creative prompt ideation tool inspired by Google TextFX. It helps users generate "Magic Words" and "Tension Seeds" for AI prompt engineering. The application is fully localized in Chinese and serves as an "upstream flavor workbench" - users get inspiration and creative direction here before crafting full prompts in ChatGPT, Claude, or other AI tools.
