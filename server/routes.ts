@@ -36,9 +36,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         max_tokens: 4096,
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
+      const messageContent = response.choices[0]?.message?.content;
+      if (!messageContent) {
         return res.status(500).json({ error: "No response from AI" });
+      }
+
+      // Handle both string and array content formats from OpenRouter/Claude
+      let content: string;
+      if (Array.isArray(messageContent)) {
+        // Claude sometimes returns content as array of text blocks
+        content = messageContent
+          .filter((block: any) => block.type === "text")
+          .map((block: any) => block.text || block.content || "")
+          .join("");
+      } else {
+        content = messageContent;
       }
 
       // Parse and validate the response with defensive error handling

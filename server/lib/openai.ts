@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENROUTER_API_KEY,
   defaultHeaders: {
     "HTTP-Referer": "https://promptimagination.replit.app", // 可选，用于OpenRouter的跟踪
-    "X-Title": "提示词想象工作室", // 可选，显示在OpenRouter日志中
+    "X-Title": "Prompt Imagination Studio", // 使用ASCII字符避免编码问题
   }
 });
 
