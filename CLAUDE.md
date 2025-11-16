@@ -5,6 +5,20 @@
 > **目标**：在最小沟通成本下，稳定、高质量地推进代码、设计与重构工作。
 > **原则**：清晰意图 > 一致模式 > 可持续维护。
 
+## 📚 必读文档
+
+在开始工作前，请务必阅读以下核心文档：
+
+1. **[Tooling Workflow](docs/tooling-workflow.md)** - 工具协作工作流（必读）
+   - 定义 ChatGPT、Claude Code、Replit、GitHub 之间的职责分工
+   - 标准迭代流程（规划 → 实现 → 部署 → 复盘）
+   - 双端改代码的协作协议（避免代码冲突）
+   - 黄金规则：**谁要写，谁先 pull；谁写完，谁就 push**
+
+2. **本文档 (CLAUDE.md)** - 项目技术文档
+   - 项目架构、技术栈、代码规范
+   - 开发哲学、决策框架、质量标准
+
 ## Project Overview
 
 **Prompt Imagination Studio (提示词想象工作室)** is a creative prompt ideation tool inspired by Google TextFX. It helps users generate "Magic Words" and "Tension Seeds" for AI prompt engineering. The application is fully localized in Chinese and serves as an "upstream flavor workbench" - users get inspiration and creative direction here before crafting full prompts in ChatGPT, Claude, or other AI tools.
