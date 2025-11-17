@@ -80,6 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let parsedResponse: MagicWordResponse;
       try {
         const rawParsed = JSON.parse(content);
+        console.log("AI raw response:", JSON.stringify(rawParsed, null, 2));
+
         const validationResult = magicWordResponseSchema.safeParse(rawParsed);
 
         if (!validationResult.success) {
@@ -106,6 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 vertical_lenses: validVertical,
                 horizontal_lenses: validHorizontal
               };
+              console.log(`Salvaged ${validVertical.length} vertical + ${validHorizontal.length} horizontal lenses`);
             } else {
               throw new Error("No valid lenses in response");
             }
@@ -114,6 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         } else {
           parsedResponse = validationResult.data;
+          console.log(`Validation passed: ${parsedResponse.vertical_lenses.length} vertical + ${parsedResponse.horizontal_lenses.length} horizontal`);
         }
       } catch (parseError: any) {
         console.error("Failed to parse AI response:", parseError, "Raw content:", content);
