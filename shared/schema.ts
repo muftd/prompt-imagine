@@ -13,6 +13,23 @@ export const magicWordRequestSchema = z.object({
 
 export type MagicWordRequest = z.infer<typeof magicWordRequestSchema>;
 
+// Lens schema for both vertical and horizontal lenses
+export const lensSchema = z.object({
+  name: z.string(),
+  effect_line: z.string(),
+  example_snippet: z.string(),
+});
+
+export type Lens = z.infer<typeof lensSchema>;
+
+export const magicWordResponseSchema = z.object({
+  vertical_lenses: z.array(lensSchema),
+  horizontal_lenses: z.array(lensSchema),
+});
+
+export type MagicWordResponse = z.infer<typeof magicWordResponseSchema>;
+
+// Deprecated: kept for reference
 export const magicWordSchema = z.object({
   word: z.string(),
   explanation: z.string(),
@@ -20,12 +37,6 @@ export const magicWordSchema = z.object({
 });
 
 export type MagicWord = z.infer<typeof magicWordSchema>;
-
-export const magicWordResponseSchema = z.object({
-  magicWords: z.array(magicWordSchema),
-});
-
-export type MagicWordResponse = z.infer<typeof magicWordResponseSchema>;
 
 // Tension Seeds generation schema
 export const tensionSeedRequestSchema = z.object({
