@@ -56,10 +56,10 @@ export function MagicWordAtelier() {
     onSuccess: (data) => {
       setResults(data);
       queryClient.invalidateQueries({ queryKey: ["/api/magic-words"] });
-      const totalLenses = data.vertical_lenses.length + data.horizontal_lenses.length;
+      const totalLenses = (data.vertical_lenses?.length ?? 0) + (data.horizontal_lenses?.length ?? 0);
       toast({
         title: "概念透镜已生成！",
-        description: `为您的 Prompt 创建了 ${totalLenses} 个概念透镜（${data.vertical_lenses.length} 个纵向 + ${data.horizontal_lenses.length} 个横向）。`,
+        description: `为您的 Prompt 创建了 ${totalLenses} 个概念透镜（${data.vertical_lenses?.length ?? 0} 个纵向 + ${data.horizontal_lenses?.length ?? 0} 个横向）。`,
       });
     },
     onError: (error: any) => {
@@ -81,7 +81,7 @@ export function MagicWordAtelier() {
 
     // 格式化所有透镜为文本
     let formattedText = "# 纵向深度透镜\n\n";
-    results.vertical_lenses.forEach((lens, index) => {
+    results.vertical_lenses?.forEach((lens, index) => {
       formattedText += `${index + 1}. ${lens.name}\n`;
       formattedText += `   效果：${lens.effect_line}\n`;
       formattedText += `   示例：${lens.example_snippet}\n\n`;
@@ -89,7 +89,7 @@ export function MagicWordAtelier() {
 
     formattedText += "\n" + "=".repeat(50) + "\n\n";
     formattedText += "# 横向透镜\n\n";
-    results.horizontal_lenses.forEach((lens, index) => {
+    results.horizontal_lenses?.forEach((lens, index) => {
       formattedText += `${index + 1}. ${lens.name}\n`;
       formattedText += `   效果：${lens.effect_line}\n`;
       formattedText += `   示例：${lens.example_snippet}\n\n`;
@@ -99,7 +99,7 @@ export function MagicWordAtelier() {
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2000);
 
-    const totalLenses = results.vertical_lenses.length + results.horizontal_lenses.length;
+    const totalLenses = (results.vertical_lenses?.length ?? 0) + (results.horizontal_lenses?.length ?? 0);
     toast({
       title: "已复制全部内容",
       description: `${totalLenses} 个概念透镜已复制到剪贴板`,
@@ -295,7 +295,7 @@ export function MagicWordAtelier() {
               </motion.div>
             )}
 
-            {results && (results.vertical_lenses.length > 0 || results.horizontal_lenses.length > 0) && !generateMutation.isPending && (
+            {results && ((results.vertical_lenses?.length ?? 0) > 0 || (results.horizontal_lenses?.length ?? 0) > 0) && !generateMutation.isPending && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -307,7 +307,7 @@ export function MagicWordAtelier() {
                     <Sparkles className="w-5 h-5 text-emerald-500" />
                     <h3 className="text-xl font-semibold">生成的概念透镜</h3>
                     <span className="text-sm text-muted-foreground">
-                      ({results.vertical_lenses.length + results.horizontal_lenses.length})
+                      ({(results.vertical_lenses?.length ?? 0) + (results.horizontal_lenses?.length ?? 0)})
                     </span>
                   </div>
 
@@ -355,11 +355,11 @@ export function MagicWordAtelier() {
                       <Lightbulb className="w-5 h-5 text-emerald-500" />
                       <h4 className="text-lg font-semibold">纵向深度</h4>
                       <span className="text-xs text-muted-foreground">
-                        ({results.vertical_lenses.length})
+                        ({results.vertical_lenses?.length ?? 0})
                       </span>
                     </div>
                     <div className="space-y-4">
-                      {results.vertical_lenses.map((lens, index) => (
+                      {results.vertical_lenses?.map((lens, index) => (
                         <LensCard
                           key={index}
                           lens={lens}
@@ -368,7 +368,7 @@ export function MagicWordAtelier() {
                         />
                       ))}
                     </div>
-                    {results.vertical_lenses.length === 0 && (
+                    {(results.vertical_lenses?.length ?? 0) === 0 && (
                       <p className="text-sm text-muted-foreground text-center py-8">
                         暂无纵向深度透镜
                       </p>
@@ -381,11 +381,11 @@ export function MagicWordAtelier() {
                       <Compass className="w-5 h-5 text-violet-500" />
                       <h4 className="text-lg font-semibold">横向透镜</h4>
                       <span className="text-xs text-muted-foreground">
-                        ({results.horizontal_lenses.length})
+                        ({results.horizontal_lenses?.length ?? 0})
                       </span>
                     </div>
                     <div className="space-y-4">
-                      {results.horizontal_lenses.map((lens, index) => (
+                      {results.horizontal_lenses?.map((lens, index) => (
                         <LensCard
                           key={index}
                           lens={lens}
@@ -394,7 +394,7 @@ export function MagicWordAtelier() {
                         />
                       ))}
                     </div>
-                    {results.horizontal_lenses.length === 0 && (
+                    {(results.horizontal_lenses?.length ?? 0) === 0 && (
                       <p className="text-sm text-muted-foreground text-center py-8">
                         暂无横向透镜
                       </p>
