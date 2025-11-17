@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Sparkles, Wand2, Copy, Trash2, Check } from "lucide-react";
+import { Loader2, Sparkles, Wand2, Copy, Trash2, Check, Lightbulb, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -10,12 +10,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { TemperatureControl } from "@/components/temperature-control";
-import { MagicWordCard } from "@/components/magic-word-card";
+import { LensCard } from "@/components/lens-card";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { getMagicWordErrorMessage } from "@/lib/error-handler";
-import { magicWordRequestSchema, type MagicWord, type MagicWordResponse } from "@shared/schema";
+import { magicWordRequestSchema, type MagicWordResponse } from "@shared/schema";
 
 const formSchema = magicWordRequestSchema.extend({
   styleIntent: z.string(),
@@ -24,7 +24,7 @@ const formSchema = magicWordRequestSchema.extend({
 type FormValues = z.infer<typeof formSchema>;
 
 export function MagicWordAtelier() {
-  const [results, setResults] = useState<MagicWord[]>([]);
+  const [results, setResults] = useState<MagicWordResponse | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -54,11 +54,12 @@ export function MagicWordAtelier() {
       return response;
     },
     onSuccess: (data) => {
-      setResults(data.magicWords);
+      setResults(data);
       queryClient.invalidateQueries({ queryKey: ["/api/magic-words"] });
+      const totalLenses = data.vertical_lenses.length + data.horizontal_lenses.length;
       toast({
-        title: "魔法词已生成！",
-        description: `为您的任务创建了 ${data.magicWords.length} 个魔法词。`,
+        title: "概念透镜已生成！",
+        description: `为您的 Prompt 创建了 ${totalLenses} 个概念透镜（${data.vertical_lenses.length} 个纵向 + ${data.horizontal_lenses.length} 个横向）。`,
       });
     },
     onError: (error: any) => {
@@ -76,30 +77,40 @@ export function MagicWordAtelier() {
   };
 
   const handleCopyAll = async () => {
-    if (results.length === 0) return;
+    if (!results) return;
 
-    // 格式化所有魔法词为文本
-    const formattedText = results
-      .map((word, index) => {
-        return `${index + 1}. 魔法词：${word.word}\n\n说明：${word.explanation}\n\n示例片段：\n${word.exampleSnippet}`;
-      })
-      .join('\n\n' + '='.repeat(50) + '\n\n');
+    // 格式化所有透镜为文本
+    let formattedText = "# 纵向深度透镜\n\n";
+    results.vertical_lenses.forEach((lens, index) => {
+      formattedText += `${index + 1}. ${lens.name}\n`;
+      formattedText += `   效果：${lens.effect_line}\n`;
+      formattedText += `   示例：${lens.example_snippet}\n\n`;
+    });
+
+    formattedText += "\n" + "=".repeat(50) + "\n\n";
+    formattedText += "# 横向透镜\n\n";
+    results.horizontal_lenses.forEach((lens, index) => {
+      formattedText += `${index + 1}. ${lens.name}\n`;
+      formattedText += `   效果：${lens.effect_line}\n`;
+      formattedText += `   示例：${lens.example_snippet}\n\n`;
+    });
 
     await navigator.clipboard.writeText(formattedText);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2000);
 
+    const totalLenses = results.vertical_lenses.length + results.horizontal_lenses.length;
     toast({
       title: "已复制全部内容",
-      description: `${results.length} 个魔法词已复制到剪贴板`,
+      description: `${totalLenses} 个概念透镜已复制到剪贴板`,
     });
   };
 
   const handleClearResults = () => {
-    setResults([]);
+    setResults(null);
     toast({
       title: "已清空结果",
-      description: "所有生成的魔法词已清空",
+      description: "所有生成的概念透镜已清空",
     });
   };
 
@@ -127,7 +138,7 @@ export function MagicWordAtelier() {
                   </h2>
                 </div>
                 <p className="text-muted-foreground">
-                  为您的任务添加魔法词，塑造AI的创意方向
+                  为严肃任务的 Prompt 配一小撮概念补丁，逃离平均值答案
                 </p>
               </div>
             </div>
@@ -142,12 +153,12 @@ export function MagicWordAtelier() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-foreground/80">
-                          描述您的任务和上下文
+                          您的 Prompt（或任务描述）
                         </FormLabel>
                         <FormControl>
                           <Textarea
                             data-testid="textarea-task-description"
-                            placeholder="任务：为Claude代码助手创建产品分析&#10;上下文：面向产品经理，技术性但易懂&#10;目标：帮助他们理解架构和价值主张"
+                            placeholder="直接贴入您要发给 AI 的完整 Prompt，或简要描述任务。&#10;&#10;示例 1（架构设计）：&#10;请帮我设计一个多 Coach 协同的 AgentOS 架构，需要考虑上下文流转、任务分发和状态同步。&#10;&#10;示例 2（产品分析）：&#10;分析 Claude Code 这个产品，它的核心价值奇点在哪里？与传统 IDE 插件的差异是什么？"
                             {...field}
                             className="min-h-48 resize-none text-base rounded-xl bg-background/50 backdrop-blur-sm border-border/40 focus:border-emerald-500/50 transition-colors"
                             disabled={generateMutation.isPending}
@@ -173,12 +184,12 @@ export function MagicWordAtelier() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-foreground/80">
-                          风格或意图（可选）
+                          风格与意向（可选）
                         </FormLabel>
                         <FormControl>
                           <Input
                             data-testid="input-style-intent"
-                            placeholder="例如：结构化 + 禅意般，无PR废话"
+                            placeholder="例如：结构化 + 禅意般，无PR废话 / 偏向实用主义，避免过度抽象"
                             {...field}
                             className="text-base rounded-xl bg-background/50 backdrop-blur-sm border-border/40 focus:border-emerald-500/50 transition-colors"
                             disabled={generateMutation.isPending}
@@ -230,12 +241,12 @@ export function MagicWordAtelier() {
                       {generateMutation.isPending ? (
                         <>
                           <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          生成魔法词中...
+                          生成概念透镜中...
                         </>
                       ) : (
                         <>
                           <Wand2 className="w-5 h-5 mr-2" />
-                          运行魔法
+                          生成概念补丁
                         </>
                       )}
                     </Button>
@@ -263,13 +274,28 @@ export function MagicWordAtelier() {
               >
                 <div className="flex items-center gap-3 mb-6">
                   <Sparkles className="w-5 h-5 text-emerald-500 animate-pulse" />
-                  <h3 className="text-xl font-semibold">正在施展魔法...</h3>
+                  <h3 className="text-xl font-semibold">正在生成概念透镜...</h3>
                 </div>
-                <LoadingSkeleton count={3} variant="magic" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Lightbulb className="w-4 h-4 text-emerald-500" />
+                      <h4 className="text-sm font-medium text-muted-foreground">纵向深度</h4>
+                    </div>
+                    <LoadingSkeleton count={2} variant="magic" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Compass className="w-4 h-4 text-violet-500" />
+                      <h4 className="text-sm font-medium text-muted-foreground">横向透镜</h4>
+                    </div>
+                    <LoadingSkeleton count={2} variant="magic" />
+                  </div>
+                </div>
               </motion.div>
             )}
 
-            {results && results.length > 0 && !generateMutation.isPending && (
+            {results && (results.vertical_lenses.length > 0 || results.horizontal_lenses.length > 0) && !generateMutation.isPending && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -279,8 +305,10 @@ export function MagicWordAtelier() {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <Sparkles className="w-5 h-5 text-emerald-500" />
-                    <h3 className="text-xl font-semibold">生成的魔法词</h3>
-                    <span className="text-sm text-muted-foreground">({results.length})</span>
+                    <h3 className="text-xl font-semibold">生成的概念透镜</h3>
+                    <span className="text-sm text-muted-foreground">
+                      ({results.vertical_lenses.length + results.horizontal_lenses.length})
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -318,26 +346,65 @@ export function MagicWordAtelier() {
                     </motion.div>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 gap-6">
-                  {results.map((word, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    >
-                      <MagicWordCard
-                        magicWord={word}
-                        index={index}
-                      />
-                    </motion.div>
-                  ))}
+
+                {/* Left-Right Layout: Vertical | Horizontal */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Vertical Lenses Column */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Lightbulb className="w-5 h-5 text-emerald-500" />
+                      <h4 className="text-lg font-semibold">纵向深度</h4>
+                      <span className="text-xs text-muted-foreground">
+                        ({results.vertical_lenses.length})
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      {results.vertical_lenses.map((lens, index) => (
+                        <LensCard
+                          key={index}
+                          lens={lens}
+                          variant="vertical"
+                          index={index}
+                        />
+                      ))}
+                    </div>
+                    {results.vertical_lenses.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        暂无纵向深度透镜
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Horizontal Lenses Column */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Compass className="w-5 h-5 text-violet-500" />
+                      <h4 className="text-lg font-semibold">横向透镜</h4>
+                      <span className="text-xs text-muted-foreground">
+                        ({results.horizontal_lenses.length})
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      {results.horizontal_lenses.map((lens, index) => (
+                        <LensCard
+                          key={index}
+                          lens={lens}
+                          variant="horizontal"
+                          index={index}
+                        />
+                      ))}
+                    </div>
+                    {results.horizontal_lenses.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        暂无横向透镜
+                      </p>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
 
-            {!results.length && !generateMutation.isPending && (
+            {!results && !generateMutation.isPending && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -350,23 +417,24 @@ export function MagicWordAtelier() {
                   </div>
                 </div>
                 <h3 className="mt-8 text-xl font-semibold text-foreground/80">
-                  开始创作您的魔法词
+                  为您的 Prompt 配一小撮概念补丁
                 </h3>
                 <p className="mt-3 text-sm text-muted-foreground max-w-md">
-                  魔法词能够塑造 AI 的回应风格和创意方向。描述您的任务，我们将为您生成专属的魔法词片段。
+                  我们只服务严肃的知识探索任务：架构设计、产品分析、学习规划、深度解释。<br/>
+                  让 AI 的回答逃离平均值，走向更深刻、更锐利的特殊路径。
                 </p>
 
                 <div className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl max-w-lg space-y-3">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">💡 试试这些示例</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">💡 适合的场景示例</p>
                   <div className="space-y-2 text-left">
                     <div className="text-sm text-foreground/70">
-                      <span className="text-emerald-500 font-medium">·</span> 为产品经理写技术文档
+                      <span className="text-emerald-500 font-medium">·</span> 设计多 Coach 协同的 AgentOS 架构
                     </div>
                     <div className="text-sm text-foreground/70">
-                      <span className="text-emerald-500 font-medium">·</span> 创作科幻小说的开篇段落
+                      <span className="text-emerald-500 font-medium">·</span> 分析 Claude Code 的核心价值奇点
                     </div>
                     <div className="text-sm text-foreground/70">
-                      <span className="text-emerald-500 font-medium">·</span> 生成市场营销文案
+                      <span className="text-emerald-500 font-medium">·</span> 规划系统性学习 PKM（个人知识管理）
                     </div>
                   </div>
                 </div>
