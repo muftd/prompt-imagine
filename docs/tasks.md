@@ -91,15 +91,21 @@
     - HTTP 4xx/5xx 错误不重试
     - 自动应用到所有 mutations
 
-- `[TODO]` 添加 React Error Boundary
-  - 位置：`client/src/App.tsx` 包裹主要组件
-  - 功能：捕获渲染错误，显示友好界面
-  - 参考：Shadcn UI 的错误处理模式
+- `[DONE]` 添加 React Error Boundary
+  - 位置：新建 `error-boundary.tsx` + `client/src/App.tsx`
+  - 结果：
+    - 创建 ErrorBoundary 类组件捕获渲染错误
+    - 显示友好的错误界面（图标 + 错误详情）
+    - 提供刷新和返回首页操作
+    - 开发环境显示完整错误栈
 
-- `[TODO]` 完善服务端日志记录
-  - 位置：`server/routes.ts` 两个端点
-  - 内容：记录请求参数、响应时间、错误详情
-  - 工具：console.log + 时间戳（Replit 可查看）
+- `[DONE]` 完善服务端日志记录
+  - 位置：新建 `server/lib/logger.ts` + `server/routes.ts`
+  - 结果：
+    - 创建结构化日志工具（带时间戳 + 上下文）
+    - 记录 API 请求开始、成功、失败
+    - 记录响应时间和结果数量
+    - 开发环境显示详细参数，生产环境仅关键信息
 
 ## 2. 已完成任务（归档）
 
