@@ -28,19 +28,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getMagicWordPrompt(taskDescription, styleIntent, temperature);
 
-      // Call OpenAI
-      // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+      // 调用OpenRouter - 使用Claude Haiku 4.5以获得更快的响应速度
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "anthropic/claude-haiku-4.5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 8192,
+        max_tokens: 4096,
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
+      const messageContent = response.choices[0]?.message?.content;
+      if (!messageContent) {
         return res.status(500).json({ error: "No response from AI" });
       }
+
+      // Handle both string and array content formats from OpenRouter/Claude
+      let content: string;
+      if (Array.isArray(messageContent)) {
+        // Claude sometimes returns content as array of text blocks
+        content = messageContent
+          .filter((block: any) => block.type === "text")
+          .map((block: any) => block.text || block.content || "")
+          .join("");
+      } else {
+        content = messageContent;
+      }
+
+      // Strip markdown code fences if present
+      content = content.trim();
+      if (content.startsWith("```json")) {
+        content = content.slice(7); // Remove ```json
+      } else if (content.startsWith("```")) {
+        content = content.slice(3); // Remove ```
+      }
+      if (content.endsWith("```")) {
+        content = content.slice(0, -3); // Remove trailing ```
+      }
+      content = content.trim();
 
       // Parse and validate the response with defensive error handling
       let parsedResponse: MagicWordResponse;
@@ -108,19 +131,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate prompt
       const prompt = getTensionSeedPrompt(theme, validAxes, temperature);
 
-      // Call OpenAI
-      // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+      // 调用OpenRouter - 使用Claude Haiku 4.5以获得更快的响应速度
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "anthropic/claude-haiku-4.5",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        max_completion_tokens: 8192,
+        max_tokens: 4096,
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
+      const messageContent = response.choices[0]?.message?.content;
+      if (!messageContent) {
         return res.status(500).json({ error: "No response from AI" });
       }
+
+      // Handle both string and array content formats from OpenRouter/Claude
+      let content: string;
+      if (Array.isArray(messageContent)) {
+        // Claude sometimes returns content as array of text blocks
+        content = messageContent
+          .filter((block: any) => block.type === "text")
+          .map((block: any) => block.text || block.content || "")
+          .join("");
+      } else {
+        content = messageContent;
+      }
+
+      // Strip markdown code fences if present
+      content = content.trim();
+      if (content.startsWith("```json")) {
+        content = content.slice(7); // Remove ```json
+      } else if (content.startsWith("```")) {
+        content = content.slice(3); // Remove ```
+      }
+      if (content.endsWith("```")) {
+        content = content.slice(0, -3); // Remove trailing ```
+      }
+      content = content.trim();
 
       // Parse and validate the response with defensive error handling
       let parsedResponse: TensionSeedResponse;

@@ -193,7 +193,8 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
   }
 }
 

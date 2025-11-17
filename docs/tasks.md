@@ -1,0 +1,211 @@
+# Tasks: Prompt Imagination Studio V1.0
+
+## 0. 任务管理约定
+
+**粒度控制：**
+- 每条任务应在 0.5~2 小时内可完成
+- 拆分过大的任务为子任务
+- 避免任务间的强依赖
+
+**状态标签：**
+- `[TODO]` 尚未开始
+- `[DOING]` 正在进行
+- `[BLOCKED]` 卡住，需用户决策或外部条件
+- `[DONE]` 已完成，附简短结果
+
+**更新频率：**
+- 每完成一个任务立即更新状态
+- 发现新任务时及时添加
+- 每轮迭代结束后归档已完成任务
+
+## 1. 当前任务列表
+
+### M1: 性能优化（已完成）✅
+
+- `[DONE]` 将 AI 模型从 Claude 3 Opus 切换到 Haiku 4.5
+  - 位置：`server/routes.ts` 两处（magic-words + tension-seeds）
+  - 结果：响应时间从 18-20 秒降至 5-10 秒
+- `[DONE]` 添加 markdown 代码块清理逻辑
+  - 位置：`server/routes.ts` 两个端点
+  - 结果：正确处理 Claude 返回的 ```json 包裹
+- `[DONE]` 合并 Replit 的 UI 优化改动
+  - 结果：Figma 风格切换器、glassmorphism 效果、渐变背景
+
+### M2: 用户体验优化（进行中）🔄
+
+- `[TODO]` 添加输入字符数限制和实时提示
+  - 位置：`shared/schema.ts` 增加 max 验证
+  - 目标：防止用户输入过长导致 token 超限
+  - 建议限制：taskDescription 500 字符，theme 200 字符
+
+- `[TODO]` 改进加载状态的视觉反馈
+  - 位置：`client/src/components/magic-word-atelier.tsx` + `tension-seeds-studio.tsx`
+  - 方案：添加骨架屏（skeleton）或进度条
+  - 参考：Shadcn UI 的 Skeleton 组件
+
+- `[TODO]` 优化错误提示的友好度
+  - 位置：两个 atelier 组件的 `onError` 回调
+  - 方案：根据错误类型显示不同的中文提示
+  - 示例：网络错误、AI 响应格式错误、验证失败等
+
+- `[TODO]` 添加"复制全部"和"清空结果"功能
+  - 位置：结果展示区域
+  - UI：在结果上方添加操作按钮组
+  - 功能：
+    - 复制全部：将所有卡片内容格式化后复制
+    - 清空：清空当前显示的结果
+
+- `[TODO]` 添加生成结果为空时的友好提示
+  - 位置：两个 atelier 组件
+  - 方案：EmptyState 组件 + 建议文案
+
+### M3: 内容持久化（待开始）📋
+
+- `[TODO]` 设计历史记录数据结构
+  - 位置：新建 `client/src/types/history.ts`
+  - 结构：包含时间戳、输入、输出、模式类型
+
+- `[TODO]` 实现 LocalStorage 保存逻辑
+  - 位置：新建 `client/src/lib/storage.ts`
+  - 功能：保存、读取、清空历史记录
+  - 容量控制：最多保存 50 条
+
+- `[TODO]` 添加历史记录查看界面
+  - 位置：新建 `client/src/components/history-panel.tsx`
+  - UI：侧边抽屉或模态框
+  - 功能：浏览、搜索、删除历史记录
+
+- `[TODO]` 实现导出为 Markdown 功能
+  - 位置：导出逻辑在 `client/src/lib/export.ts`
+  - 格式：按日期分组，包含输入和输出
+  - 触发：下载按钮触发文件下载
+
+- `[TODO]` 实现导出为 JSON 功能
+  - 格式：完整的数据结构，方便导入
+  - 用途：备份或在其他工具中使用
+
+### M4: 稳定性增强（待开始）📋
+
+- `[TODO]` 为 AI 调用添加超时配置
+  - 位置：`client/src/lib/queryClient.ts`
+  - 配置：TanStack Query 的 timeout 选项
+  - 建议：30 秒超时
+
+- `[TODO]` 实现 API 调用失败的重试机制
+  - 位置：TanStack Query mutation 配置
+  - 策略：最多重试 2 次，指数退避
+  - 条件：仅网络错误重试，4xx 错误不重试
+
+- `[TODO]` 添加 React Error Boundary
+  - 位置：`client/src/App.tsx` 包裹主要组件
+  - 功能：捕获渲染错误，显示友好界面
+  - 参考：Shadcn UI 的错误处理模式
+
+- `[TODO]` 完善服务端日志记录
+  - 位置：`server/routes.ts` 两个端点
+  - 内容：记录请求参数、响应时间、错误详情
+  - 工具：console.log + 时间戳（Replit 可查看）
+
+## 2. 已完成任务（归档）
+
+### 基础设施（2025-01-15）
+
+- `[DONE]` 在 Replit 创建项目并绑定 GitHub 仓库
+  - 仓库：`muftd/prompt-imagine`
+  - 结果：项目可通过 Replit 访问和部署
+
+- `[DONE]` 配置 OpenRouter AI 集成
+  - 模型：最初使用 Claude 3 Opus
+  - 环境变量：在 Replit Secrets 中配置
+
+### 核心功能（2025-01-15）
+
+- `[DONE]` 实现魔法词工坊完整功能
+  - 文件：`client/src/components/magic-word-atelier.tsx` + `magic-word-card.tsx`
+  - 功能：表单验证、API 调用、结果展示、复制
+
+- `[DONE]` 实现张力种子工作室完整功能
+  - 文件：`client/src/components/tension-seeds-studio.tsx` + `tension-seed-card.tsx`
+  - 功能：动态张力轴、表单验证、结果展示
+
+- `[DONE]` 实现温度控制组件
+  - 文件：`client/src/components/temperature-control.tsx`
+  - 样式：三段式选择器，中文标签
+
+### UI/UX 优化（2025-01-16）
+
+- `[DONE]` 实现 Figma 风格的模式切换器
+  - 文件：`client/src/pages/home.tsx`
+  - 效果：平滑动画、渐变背景、glassmorphism
+
+- `[DONE]` 添加模式特定的渐变背景
+  - 颜色：魔法词（绿色）、张力种子（紫色）
+  - 动画：Framer Motion crossfade
+
+- `[DONE]` 优化卡片组件的交互和视觉
+  - 效果：hover 提升、阴影层次、圆角
+
+- `[DONE]` 切换到思源黑体字体
+  - 文件：`client/src/index.css`
+  - 效果：改善中文显示质量
+
+### 协作流程（2025-01-16）
+
+- `[DONE]` 创建工具协作工作流文档
+  - 文件：`docs/tooling-workflow.md`
+  - 内容：ChatGPT、Claude Code、Replit 分工
+
+- `[DONE]` 更新 CLAUDE.md 指向工作流文档
+  - 添加"必读文档"章节
+  - 避免文档冗余
+
+### Dev Docs 建设（当前）
+
+- `[DONE]` 创建 `docs/plan.md`
+  - 内容：V1.0 目标、阶段划分、验收标准
+
+- `[DONE]` 创建 `docs/context.md`
+  - 内容：技术栈、决策、约束、经验
+
+- `[DOING]` 创建 `docs/tasks.md`
+  - 内容：当前任务列表、已完成归档
+
+## 3. 阻塞点
+
+### 决策类阻塞
+
+- `[BLOCKED]` M3 历史记录功能的 UI 设计
+  - 问题：侧边抽屉 vs 独立页面 vs 模态框？
+  - 需要：用户确认偏好的交互方式
+
+- `[BLOCKED]` 是否需要添加用户偏好设置
+  - 问题：保存默认温度、主题色等
+  - 需要：评估是否在 V1.0 范围内
+
+### 技术类阻塞
+
+- `[BLOCKED]` Replit 部署后字体加载问题
+  - 现象：（待观察）思源黑体可能在某些环境加载失败
+  - 需要：在 Replit 实际测试
+  - 备选：配置 Google Fonts CDN fallback
+
+## 4. 待拆分的大任务
+
+以下任务当前粒度过大，需要进一步拆分：
+
+- "添加完整的用户引导系统"
+  - 拆分为：首次访问提示、功能说明弹窗、示例输入建议
+
+- "性能监控和分析"
+  - 拆分为：添加关键指标埋点、实现简单的日志聚合、创建性能仪表板
+
+## 5. 未来考虑（超出 V1.0 范围）
+
+以下任务不在当前 plan.md 的 V1.0 范围内，仅作记录：
+
+- 实现用户账户系统
+- 添加多语言支持（英文）
+- 集成更多 AI 模型选择
+- 实现协作分享功能
+- 开发移动端适配版本
+- 添加 Prompt 模板市场
