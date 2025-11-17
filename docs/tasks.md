@@ -107,7 +107,68 @@
     - 记录响应时间和结果数量
     - 开发环境显示详细参数，生产环境仅关键信息
 
-## 2. 已完成任务（归档）
+### M4: 产品定位重构 - Prompt 调味台（已完成）✅
+
+- `[DONE]` 重新定位魔法词工坊为"Prompt 调味台"
+  - 位置：`server/lib/prompts.ts` AI Prompt 模板
+  - 结果：
+    - 明确产品定位：为严肃知识探索任务提供概念补丁
+    - 限定 4 类任务场景（分析/解释、架构设计、学习规划、产品拆解）
+    - 强调"调味台"隐喻 - 用户带现成 Prompt 来增强
+
+- `[DONE]` 重构数据结构为 lens 双维度架构
+  - 位置：`shared/schema.ts` + `server/lib/prompts.ts` + `server/routes.ts`
+  - 结果：
+    - 定义 lensSchema：{ name, effect_line, example_snippet }
+    - 响应结构变为：{ vertical_lenses: [], horizontal_lenses: [] }
+    - 取消 patch_sentence 字段
+    - 每维度固定 5 个透镜
+
+- `[DONE]` 创建 LensCard 组件支持双主题
+  - 位置：新建 `client/src/components/lens-card.tsx`
+  - 结果：
+    - 支持 variant="vertical" | "horizontal"
+    - Vertical：绿色主题 + Lightbulb 图标
+    - Horizontal：紫色主题 + Compass 图标
+    - 独立复制按钮复制 example_snippet
+
+- `[DONE]` 重构 MagicWordAtelier 为左右列布局
+  - 位置：`client/src/components/magic-word-atelier.tsx`
+  - 结果：
+    - 左列展示纵向深度透镜（5 个）
+    - 右列展示横向透镜（5 个）
+    - 更新所有标签和占位符文案
+    - 状态从 `MagicWord[]` 改为 `MagicWordResponse | null`
+    - 添加可选链防止 undefined 错误
+
+- `[DONE]` 修复 500 错误和代码不一致问题
+  - 位置：`shared/schema.ts` + `server/lib/prompts.ts` + `server/routes.ts`
+  - 根因：git merge 后文件间数据结构不一致
+  - 解决：
+    - 同步更新所有文件使用新 lens 结构
+    - 防御性解析检查 vertical_lenses/horizontal_lenses
+    - 添加调试日志便于排查
+
+- `[DONE]` 解决 PR #10 的 merge conflict
+  - 文件：`server/lib/prompts.ts` + `server/routes.ts`
+  - 冲突类型：数量要求（2-4 vs 5）
+  - 解决策略：选择 feature branch 版本（每维度 5 个）
+
+## 2. 后续优化任务（待规划）
+
+### Prompt 调味台优化点
+
+- `[TODO]` 处理测试期间发现的数据逻辑优化点
+  - 来源：M4 实现完成后的用户测试反馈
+  - 状态：待具体需求明确后拆分为独立任务
+  - 优先级：中等
+
+- `[TODO]` 处理测试期间发现的交互优化点
+  - 来源：M4 实现完成后的用户测试反馈
+  - 状态：待具体需求明确后拆分为独立任务
+  - 优先级：中等
+
+## 3. 已完成任务（归档）
 
 ### 基础设施（2025-01-15）
 
@@ -168,10 +229,10 @@
 - `[DONE]` 创建 `docs/context.md`
   - 内容：技术栈、决策、约束、经验
 
-- `[DOING]` 创建 `docs/tasks.md`
+- `[DONE]` 创建 `docs/tasks.md`
   - 内容：当前任务列表、已完成归档
 
-## 3. 阻塞点
+## 4. 阻塞点
 
 ### 决策类阻塞
 
@@ -190,7 +251,7 @@
   - 需要：在 Replit 实际测试
   - 备选：配置 Google Fonts CDN fallback
 
-## 4. 待拆分的大任务
+## 5. 待拆分的大任务
 
 以下任务当前粒度过大，需要进一步拆分：
 
@@ -200,7 +261,7 @@
 - "性能监控和分析"
   - 拆分为：添加关键指标埋点、实现简单的日志聚合、创建性能仪表板
 
-## 5. 未来考虑（超出 V1.0 范围）
+## 6. 未来考虑（超出 V1.0 范围）
 
 以下任务不在当前 plan.md 的 V1.0 范围内，仅作记录：
 
