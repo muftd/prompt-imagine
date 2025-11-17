@@ -29,7 +29,7 @@ export const magicWordResponseSchema = z.object({
 
 export type MagicWordResponse = z.infer<typeof magicWordResponseSchema>;
 
-// Deprecated: kept for reference, will be removed in future
+// Deprecated: kept for reference
 export const magicWordSchema = z.object({
   word: z.string(),
   explanation: z.string(),
