@@ -13,6 +13,7 @@ import { TensionSeedCard } from "@/components/tension-seed-card";
 import { TensionSeedSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getTensionSeedErrorMessage } from "@/lib/error-handler";
 import { tensionSeedRequestSchema, type TensionSeed, type TensionSeedResponse } from "@shared/schema";
 
 const formSchema = tensionSeedRequestSchema;
@@ -62,9 +63,10 @@ export function TensionSeedsStudio() {
       });
     },
     onError: (error: any) => {
+      const friendlyError = getTensionSeedErrorMessage(error);
       toast({
-        title: "生成失败",
-        description: error.message || "无法生成张力种子，请重试。",
+        title: friendlyError.title,
+        description: friendlyError.description + (friendlyError.suggestion ? `\n\n💡 ${friendlyError.suggestion}` : ''),
         variant: "destructive",
       });
     },

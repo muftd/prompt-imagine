@@ -14,6 +14,7 @@ import { MagicWordCard } from "@/components/magic-word-card";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getMagicWordErrorMessage } from "@/lib/error-handler";
 import { magicWordRequestSchema, type MagicWord, type MagicWordResponse } from "@shared/schema";
 
 const formSchema = magicWordRequestSchema.extend({
@@ -60,9 +61,10 @@ export function MagicWordAtelier() {
       });
     },
     onError: (error: any) => {
+      const friendlyError = getMagicWordErrorMessage(error);
       toast({
-        title: "生成失败",
-        description: error.message || "无法生成魔法词，请重试。",
+        title: friendlyError.title,
+        description: friendlyError.description + (friendlyError.suggestion ? `\n\n💡 ${friendlyError.suggestion}` : ''),
         variant: "destructive",
       });
     },
