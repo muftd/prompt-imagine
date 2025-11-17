@@ -81,21 +81,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const rawParsed = JSON.parse(content);
         const validationResult = magicWordResponseSchema.safeParse(rawParsed);
-        
+
         if (!validationResult.success) {
           console.error("AI response validation failed:", validationResult.error);
           // Attempt to salvage partial data if possible
-          if (rawParsed.magicWords && Array.isArray(rawParsed.magicWords) && rawParsed.magicWords.length > 0) {
-            // Filter valid magic words
-            const validWords = rawParsed.magicWords.filter((word: any) => 
-              word && typeof word.word === 'string' && 
-              typeof word.explanation === 'string' && 
-              typeof word.exampleSnippet === 'string'
+          const verticalLenses = rawParsed.vertical_lenses;
+          const horizontalLenses = rawParsed.horizontal_lenses;
+
+          if (verticalLenses && Array.isArray(verticalLenses) && horizontalLenses && Array.isArray(horizontalLenses)) {
+            // Filter valid lenses
+            const validVertical = verticalLenses.filter((lens: any) =>
+              lens && typeof lens.name === 'string' &&
+              typeof lens.effect_line === 'string' &&
+              typeof lens.example_snippet === 'string'
             );
-            if (validWords.length > 0) {
-              parsedResponse = { magicWords: validWords };
+            const validHorizontal = horizontalLenses.filter((lens: any) =>
+              lens && typeof lens.name === 'string' &&
+              typeof lens.effect_line === 'string' &&
+              typeof lens.example_snippet === 'string'
+            );
+
+            if (validVertical.length > 0 || validHorizontal.length > 0) {
+              parsedResponse = {
+                vertical_lenses: validVertical,
+                horizontal_lenses: validHorizontal
+              };
             } else {
-              throw new Error("No valid magic words in response");
+              throw new Error("No valid lenses in response");
             }
           } else {
             throw new Error("Invalid response structure from AI");
@@ -112,7 +124,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const duration = Date.now() - startTime;
-      logger.apiSuccess(endpoint, duration, parsedResponse.magicWords.length);
+      const totalLenses = parsedResponse.vertical_lenses.length + parsedResponse.horizontal_lenses.length;
+      logger.apiSuccess(endpoint, duration, totalLenses);
       return res.json(parsedResponse);
     } catch (error: any) {
       const duration = Date.now() - startTime;
