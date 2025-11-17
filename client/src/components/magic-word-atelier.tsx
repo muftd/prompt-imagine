@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Wand2, Copy, Trash2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function MagicWordAtelier() {
   const [results, setResults] = useState<MagicWord[]>([]);
+  const [copiedAll, setCopiedAll] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -72,6 +73,34 @@ export function MagicWordAtelier() {
 
   const onSubmit = (data: FormValues) => {
     generateMutation.mutate(data);
+  };
+
+  const handleCopyAll = async () => {
+    if (results.length === 0) return;
+
+    // 格式化所有魔法词为文本
+    const formattedText = results
+      .map((word, index) => {
+        return `${index + 1}. 魔法词：${word.word}\n\n说明：${word.explanation}\n\n示例片段：\n${word.exampleSnippet}`;
+      })
+      .join('\n\n' + '='.repeat(50) + '\n\n');
+
+    await navigator.clipboard.writeText(formattedText);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 2000);
+
+    toast({
+      title: "已复制全部内容",
+      description: `${results.length} 个魔法词已复制到剪贴板`,
+    });
+  };
+
+  const handleClearResults = () => {
+    setResults([]);
+    toast({
+      title: "已清空结果",
+      description: "所有生成的魔法词已清空",
+    });
   };
 
   return (
@@ -247,9 +276,47 @@ export function MagicWordAtelier() {
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <Sparkles className="w-5 h-5 text-emerald-500" />
-                  <h3 className="text-xl font-semibold">生成的魔法词</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-5 h-5 text-emerald-500" />
+                    <h3 className="text-xl font-semibold">生成的魔法词</h3>
+                    <span className="text-sm text-muted-foreground">({results.length})</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyAll}
+                        className="rounded-xl border-emerald-500/20 hover:border-emerald-500/40 hover:bg-emerald-500/10"
+                      >
+                        {copiedAll ? (
+                          <>
+                            <Check className="w-4 h-4 mr-1.5" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-1.5" />
+                            复制全部
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearResults}
+                        className="rounded-xl hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1.5" />
+                        清空
+                      </Button>
+                    </motion.div>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-6">
