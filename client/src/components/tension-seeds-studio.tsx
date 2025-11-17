@@ -121,7 +121,16 @@ export function TensionSeedsStudio() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 200 ? 'text-destructive' :
+                            field.value.length > 180 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/200
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -199,7 +208,16 @@ export function TensionSeedsStudio() {
                                     )}
                                   </div>
                                 </FormControl>
-                                <FormMessage />
+                                <div className="flex justify-between items-center">
+                                  <FormMessage />
+                                  <span className={`text-xs ${
+                                    field.value.length > 100 ? 'text-destructive' :
+                                    field.value.length > 90 ? 'text-yellow-500' :
+                                    'text-muted-foreground'
+                                  }`}>
+                                    {field.value.length}/100
+                                  </span>
+                                </div>
                               </FormItem>
                             )}
                           />

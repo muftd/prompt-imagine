@@ -33,10 +33,12 @@
 
 ### M2: 用户体验优化（进行中）🔄
 
-- `[TODO]` 添加输入字符数限制和实时提示
-  - 位置：`shared/schema.ts` 增加 max 验证
-  - 目标：防止用户输入过长导致 token 超限
-  - 建议限制：taskDescription 500 字符，theme 200 字符
+- `[DONE]` 添加输入字符数限制和实时提示
+  - 位置：`shared/schema.ts` + 两个 atelier 组件
+  - 结果：
+    - Schema 添加字符限制：taskDescription/styleIntent 500，theme 200，tensionAxes 100
+    - 所有验证错误信息中文化
+    - 表单添加实时字符计数器，带颜色编码（正常/警告/错误）
 
 - `[TODO]` 改进加载状态的视觉反馈
   - 位置：`client/src/components/magic-word-atelier.tsx` + `tension-seeds-studio.tsx`

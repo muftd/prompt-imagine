@@ -121,7 +121,16 @@ export function MagicWordAtelier() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 500 ? 'text-destructive' :
+                            field.value.length > 450 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/500
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -143,7 +152,16 @@ export function MagicWordAtelier() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 500 ? 'text-destructive' :
+                            field.value.length > 450 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/500
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />

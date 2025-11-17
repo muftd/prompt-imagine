@@ -2,8 +2,12 @@ import { z } from "zod";
 
 // Magic Word generation schema
 export const magicWordRequestSchema = z.object({
-  taskDescription: z.string().min(10, "Task description must be at least 10 characters"),
-  styleIntent: z.string().optional(),
+  taskDescription: z.string()
+    .min(10, "任务描述至少需要 10 个字符")
+    .max(500, "任务描述不能超过 500 个字符"),
+  styleIntent: z.string()
+    .max(500, "风格意图不能超过 500 个字符")
+    .optional(),
   temperature: z.enum(["low", "medium", "high"]).default("medium"),
 });
 
@@ -25,8 +29,14 @@ export type MagicWordResponse = z.infer<typeof magicWordResponseSchema>;
 
 // Tension Seeds generation schema
 export const tensionSeedRequestSchema = z.object({
-  theme: z.string().min(5, "Theme must be at least 5 characters"),
-  tensionAxes: z.array(z.string()).min(1, "At least one tension axis is required"),
+  theme: z.string()
+    .min(5, "主题至少需要 5 个字符")
+    .max(200, "主题不能超过 200 个字符"),
+  tensionAxes: z.array(
+    z.string()
+      .min(1, "张力轴不能为空")
+      .max(100, "每个张力轴不能超过 100 个字符")
+  ).min(1, "至少需要一个张力轴"),
   temperature: z.enum(["low", "medium", "high"]).default("medium"),
 });
 
