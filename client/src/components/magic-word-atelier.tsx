@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Wand2, Copy, Trash2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { TemperatureControl } from "@/components/temperature-control";
 import { MagicWordCard } from "@/components/magic-word-card";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getMagicWordErrorMessage } from "@/lib/error-handler";
 import { magicWordRequestSchema, type MagicWord, type MagicWordResponse } from "@shared/schema";
 
 const formSchema = magicWordRequestSchema.extend({
@@ -23,6 +25,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function MagicWordAtelier() {
   const [results, setResults] = useState<MagicWord[]>([]);
+  const [copiedAll, setCopiedAll] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -59,9 +62,10 @@ export function MagicWordAtelier() {
       });
     },
     onError: (error: any) => {
+      const friendlyError = getMagicWordErrorMessage(error);
       toast({
-        title: "生成失败",
-        description: error.message || "无法生成魔法词，请重试。",
+        title: friendlyError.title,
+        description: friendlyError.description + (friendlyError.suggestion ? `\n\n💡 ${friendlyError.suggestion}` : ''),
         variant: "destructive",
       });
     },
@@ -69,6 +73,34 @@ export function MagicWordAtelier() {
 
   const onSubmit = (data: FormValues) => {
     generateMutation.mutate(data);
+  };
+
+  const handleCopyAll = async () => {
+    if (results.length === 0) return;
+
+    // 格式化所有魔法词为文本
+    const formattedText = results
+      .map((word, index) => {
+        return `${index + 1}. 魔法词：${word.word}\n\n说明：${word.explanation}\n\n示例片段：\n${word.exampleSnippet}`;
+      })
+      .join('\n\n' + '='.repeat(50) + '\n\n');
+
+    await navigator.clipboard.writeText(formattedText);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 2000);
+
+    toast({
+      title: "已复制全部内容",
+      description: `${results.length} 个魔法词已复制到剪贴板`,
+    });
+  };
+
+  const handleClearResults = () => {
+    setResults([]);
+    toast({
+      title: "已清空结果",
+      description: "所有生成的魔法词已清空",
+    });
   };
 
   return (
@@ -121,7 +153,16 @@ export function MagicWordAtelier() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 500 ? 'text-destructive' :
+                            field.value.length > 450 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/500
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -143,7 +184,16 @@ export function MagicWordAtelier() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 500 ? 'text-destructive' :
+                            field.value.length > 450 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/500
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -209,15 +259,13 @@ export function MagicWordAtelier() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center min-h-[400px]"
+                className="space-y-6"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full blur-2xl opacity-30 animate-pulse" />
-                  <div className="relative p-6 bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full">
-                    <Sparkles className="w-12 h-12 text-emerald-500 animate-spin" />
-                  </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Sparkles className="w-5 h-5 text-emerald-500 animate-pulse" />
+                  <h3 className="text-xl font-semibold">正在施展魔法...</h3>
                 </div>
-                <p className="mt-6 text-lg text-muted-foreground">正在施展魔法...</p>
+                <LoadingSkeleton count={3} variant="magic" />
               </motion.div>
             )}
 
@@ -228,9 +276,47 @@ export function MagicWordAtelier() {
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <Sparkles className="w-5 h-5 text-emerald-500" />
-                  <h3 className="text-xl font-semibold">生成的魔法词</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-5 h-5 text-emerald-500" />
+                    <h3 className="text-xl font-semibold">生成的魔法词</h3>
+                    <span className="text-sm text-muted-foreground">({results.length})</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyAll}
+                        className="rounded-xl border-emerald-500/20 hover:border-emerald-500/40 hover:bg-emerald-500/10"
+                      >
+                        {copiedAll ? (
+                          <>
+                            <Check className="w-4 h-4 mr-1.5" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-1.5" />
+                            复制全部
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearResults}
+                        className="rounded-xl hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1.5" />
+                        清空
+                      </Button>
+                    </motion.div>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-6">
@@ -255,17 +341,35 @@ export function MagicWordAtelier() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center min-h-[400px] text-center"
+                className="flex flex-col items-center justify-center min-h-[400px] text-center px-6"
               >
-                <div className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
-                  <Sparkles className="w-12 h-12 text-muted-foreground/50" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-400/20 rounded-full blur-3xl opacity-50" />
+                  <div className="relative p-8 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
+                    <Sparkles className="w-16 h-16 text-muted-foreground/50" />
+                  </div>
                 </div>
-                <h3 className="mt-6 text-lg font-medium text-muted-foreground">
-                  尚未生成魔法词
+                <h3 className="mt-8 text-xl font-semibold text-foreground/80">
+                  开始创作您的魔法词
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground/80">
-                  输入任务描述并点击"运行魔法"开始生成
+                <p className="mt-3 text-sm text-muted-foreground max-w-md">
+                  魔法词能够塑造 AI 的回应风格和创意方向。描述您的任务，我们将为您生成专属的魔法词片段。
                 </p>
+
+                <div className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl max-w-lg space-y-3">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">💡 试试这些示例</p>
+                  <div className="space-y-2 text-left">
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 为产品经理写技术文档
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 创作科幻小说的开篇段落
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 生成市场营销文案
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

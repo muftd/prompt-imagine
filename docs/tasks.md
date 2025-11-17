@@ -33,31 +33,46 @@
 
 ### M2: 用户体验优化（进行中）🔄
 
-- `[TODO]` 添加输入字符数限制和实时提示
-  - 位置：`shared/schema.ts` 增加 max 验证
-  - 目标：防止用户输入过长导致 token 超限
-  - 建议限制：taskDescription 500 字符，theme 200 字符
+- `[DONE]` 添加输入字符数限制和实时提示
+  - 位置：`shared/schema.ts` + 两个 atelier 组件
+  - 结果：
+    - Schema 添加字符限制：taskDescription/styleIntent 500，theme 200，tensionAxes 100
+    - 所有验证错误信息中文化
+    - 表单添加实时字符计数器，带颜色编码（正常/警告/错误）
 
-- `[TODO]` 改进加载状态的视觉反馈
-  - 位置：`client/src/components/magic-word-atelier.tsx` + `tension-seeds-studio.tsx`
-  - 方案：添加骨架屏（skeleton）或进度条
-  - 参考：Shadcn UI 的 Skeleton 组件
+- `[DONE]` 改进加载状态的视觉反馈
+  - 位置：新建 `loading-skeleton.tsx` + 两个 atelier 组件
+  - 结果：
+    - 创建 LoadingSkeleton 和 TensionSeedSkeleton 组件
+    - 模拟真实卡片结构（badge、文本、代码块）
+    - 替换原有的简单旋转动画
+    - 保持渐进式加载动画（stagger effect）
 
-- `[TODO]` 优化错误提示的友好度
-  - 位置：两个 atelier 组件的 `onError` 回调
-  - 方案：根据错误类型显示不同的中文提示
-  - 示例：网络错误、AI 响应格式错误、验证失败等
+- `[DONE]` 优化错误提示的友好度
+  - 位置：新建 `error-handler.ts` + 两个 atelier 组件
+  - 结果：
+    - 创建错误处理工具函数 getFriendlyErrorMessage
+    - 针对不同错误类型提供专属提示（网络、超时、HTTP、验证等）
+    - Magic Word 和 Tension Seed 各有专属错误提示
+    - 错误消息包含：标题、描述、建议（💡 图标）
 
-- `[TODO]` 添加"复制全部"和"清空结果"功能
-  - 位置：结果展示区域
-  - UI：在结果上方添加操作按钮组
-  - 功能：
-    - 复制全部：将所有卡片内容格式化后复制
-    - 清空：清空当前显示的结果
+- `[DONE]` 添加"复制全部"和"清空结果"功能
+  - 位置：两个 atelier 组件的结果标题栏
+  - 结果：
+    - 添加操作按钮组（复制全部 + 清空）
+    - 显示结果数量标记
+    - 复制全部：格式化所有内容为纯文本（带分隔符）
+    - 清空：清空当前结果并显示 toast 确认
+    - 按钮带动画效果（hover scale、状态切换）
 
-- `[TODO]` 添加生成结果为空时的友好提示
-  - 位置：两个 atelier 组件
-  - 方案：EmptyState 组件 + 建议文案
+- `[DONE]` 添加生成结果为空时的友好提示
+  - 位置：两个 atelier 组件的空状态
+  - 结果：
+    - 增强图标展示（更大尺寸 + 渐变光晕效果）
+    - 更友好的标题和描述文案
+    - 添加示例建议卡片（3 个真实用例）
+    - 符合各自主题配色（emerald/purple）
+    - 提升新用户引导体验
 
 ### M3: 内容持久化（待开始）📋
 

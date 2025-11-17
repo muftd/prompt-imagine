@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Zap, Plus, X, Bolt } from "lucide-react";
+import { Loader2, Zap, Plus, X, Bolt, Copy, Trash2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -10,8 +10,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { TemperatureControl } from "@/components/temperature-control";
 import { TensionSeedCard } from "@/components/tension-seed-card";
+import { TensionSeedSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getTensionSeedErrorMessage } from "@/lib/error-handler";
 import { tensionSeedRequestSchema, type TensionSeed, type TensionSeedResponse } from "@shared/schema";
 
 const formSchema = tensionSeedRequestSchema;
@@ -20,6 +22,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function TensionSeedsStudio() {
   const [results, setResults] = useState<TensionSeed[]>([]);
+  const [copiedAll, setCopiedAll] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -61,9 +64,10 @@ export function TensionSeedsStudio() {
       });
     },
     onError: (error: any) => {
+      const friendlyError = getTensionSeedErrorMessage(error);
       toast({
-        title: "生成失败",
-        description: error.message || "无法生成张力种子，请重试。",
+        title: friendlyError.title,
+        description: friendlyError.description + (friendlyError.suggestion ? `\n\n💡 ${friendlyError.suggestion}` : ''),
         variant: "destructive",
       });
     },
@@ -71,6 +75,37 @@ export function TensionSeedsStudio() {
 
   const onSubmit = (data: FormValues) => {
     generateMutation.mutate(data);
+  };
+
+  const handleCopyAll = async () => {
+    if (results.length === 0) return;
+
+    // 格式化所有张力种子为文本
+    const formattedText = results
+      .map((seed, index) => {
+        const questions = seed.followUpQuestions
+          .map((q, i) => `   ${i + 1}. ${q}`)
+          .join('\n');
+        return `${index + 1}. 张力种子：\n${seed.seedSentence}\n\n后续问题：\n${questions}`;
+      })
+      .join('\n\n' + '='.repeat(50) + '\n\n');
+
+    await navigator.clipboard.writeText(formattedText);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 2000);
+
+    toast({
+      title: "已复制全部内容",
+      description: `${results.length} 个张力种子已复制到剪贴板`,
+    });
+  };
+
+  const handleClearResults = () => {
+    setResults([]);
+    toast({
+      title: "已清空结果",
+      description: "所有生成的张力种子已清空",
+    });
   };
 
   return (
@@ -121,7 +156,16 @@ export function TensionSeedsStudio() {
                             disabled={generateMutation.isPending}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="flex justify-between items-center">
+                          <FormMessage />
+                          <span className={`text-xs ${
+                            field.value.length > 200 ? 'text-destructive' :
+                            field.value.length > 180 ? 'text-yellow-500' :
+                            'text-muted-foreground'
+                          }`}>
+                            {field.value.length}/200
+                          </span>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -199,7 +243,16 @@ export function TensionSeedsStudio() {
                                     )}
                                   </div>
                                 </FormControl>
-                                <FormMessage />
+                                <div className="flex justify-between items-center">
+                                  <FormMessage />
+                                  <span className={`text-xs ${
+                                    field.value.length > 100 ? 'text-destructive' :
+                                    field.value.length > 90 ? 'text-yellow-500' :
+                                    'text-muted-foreground'
+                                  }`}>
+                                    {field.value.length}/100
+                                  </span>
+                                </div>
                               </FormItem>
                             )}
                           />
@@ -269,15 +322,13 @@ export function TensionSeedsStudio() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center min-h-[400px]"
+                className="space-y-6"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-violet-400 rounded-full blur-2xl opacity-30 animate-pulse" />
-                  <div className="relative p-6 bg-gradient-to-br from-purple-500/10 to-violet-400/10 rounded-full">
-                    <Zap className="w-12 h-12 text-purple-500 animate-pulse" />
-                  </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Zap className="w-5 h-5 text-purple-500 animate-pulse" />
+                  <h3 className="text-xl font-semibold">正在生成张力种子...</h3>
                 </div>
-                <p className="mt-6 text-lg text-muted-foreground">正在生成张力种子...</p>
+                <TensionSeedSkeleton count={3} />
               </motion.div>
             )}
 
@@ -288,9 +339,47 @@ export function TensionSeedsStudio() {
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <Zap className="w-5 h-5 text-purple-500" />
-                  <h3 className="text-xl font-semibold">生成的张力种子</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-purple-500" />
+                    <h3 className="text-xl font-semibold">生成的张力种子</h3>
+                    <span className="text-sm text-muted-foreground">({results.length})</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyAll}
+                        className="rounded-xl border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/10"
+                      >
+                        {copiedAll ? (
+                          <>
+                            <Check className="w-4 h-4 mr-1.5" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-1.5" />
+                            复制全部
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearResults}
+                        className="rounded-xl hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1.5" />
+                        清空
+                      </Button>
+                    </motion.div>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-6">
@@ -315,17 +404,35 @@ export function TensionSeedsStudio() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center min-h-[400px] text-center"
+                className="flex flex-col items-center justify-center min-h-[400px] text-center px-6"
               >
-                <div className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
-                  <Zap className="w-12 h-12 text-muted-foreground/50" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-violet-400/20 rounded-full blur-3xl opacity-50" />
+                  <div className="relative p-8 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
+                    <Zap className="w-16 h-16 text-muted-foreground/50" />
+                  </div>
                 </div>
-                <h3 className="mt-6 text-lg font-medium text-muted-foreground">
-                  尚未生成张力种子
+                <h3 className="mt-8 text-xl font-semibold text-foreground/80">
+                  激发创意张力
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground/80">
-                  输入主题和张力轴，点击"生成种子"开始创建
+                <p className="mt-3 text-sm text-muted-foreground max-w-md">
+                  张力种子通过挑衅性的观点和深度问题帮助您探索新的思考角度。选择一个主题，添加张力轴，开始创作。
                 </p>
+
+                <div className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl max-w-lg space-y-3">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">💡 试试这些示例</p>
+                  <div className="space-y-2 text-left">
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-purple-500 font-medium">·</span> 主题：AI 伦理 | 轴：效率 vs 公平
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-purple-500 font-medium">·</span> 主题：远程办公 | 轴：自由 vs 协作
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-purple-500 font-medium">·</span> 主题：教育创新 | 轴：传统 vs 科技
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
