@@ -341,17 +341,35 @@ export function MagicWordAtelier() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center min-h-[400px] text-center"
+                className="flex flex-col items-center justify-center min-h-[400px] text-center px-6"
               >
-                <div className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
-                  <Sparkles className="w-12 h-12 text-muted-foreground/50" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-400/20 rounded-full blur-3xl opacity-50" />
+                  <div className="relative p-8 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl">
+                    <Sparkles className="w-16 h-16 text-muted-foreground/50" />
+                  </div>
                 </div>
-                <h3 className="mt-6 text-lg font-medium text-muted-foreground">
-                  尚未生成魔法词
+                <h3 className="mt-8 text-xl font-semibold text-foreground/80">
+                  开始创作您的魔法词
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground/80">
-                  输入任务描述并点击"运行魔法"开始生成
+                <p className="mt-3 text-sm text-muted-foreground max-w-md">
+                  魔法词能够塑造 AI 的回应风格和创意方向。描述您的任务，我们将为您生成专属的魔法词片段。
                 </p>
+
+                <div className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl max-w-lg space-y-3">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">💡 试试这些示例</p>
+                  <div className="space-y-2 text-left">
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 为产品经理写技术文档
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 创作科幻小说的开篇段落
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      <span className="text-emerald-500 font-medium">·</span> 生成市场营销文案
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
