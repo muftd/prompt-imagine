@@ -74,52 +74,38 @@
     - 符合各自主题配色（emerald/purple）
     - 提升新用户引导体验
 
-### M3: 内容持久化（待开始）📋
+### M3: 稳定性增强（进行中）🔄
 
-- `[TODO]` 设计历史记录数据结构
-  - 位置：新建 `client/src/types/history.ts`
-  - 结构：包含时间戳、输入、输出、模式类型
+- `[DONE]` 为 AI 调用添加超时配置
+  - 位置：`client/src/lib/queryClient.ts` 的 apiRequest 函数
+  - 结果：
+    - 使用 AbortController 实现 60 秒超时
+    - 超时后抛出友好的中文错误提示
+    - 适用于所有 API 调用
 
-- `[TODO]` 实现 LocalStorage 保存逻辑
-  - 位置：新建 `client/src/lib/storage.ts`
-  - 功能：保存、读取、清空历史记录
-  - 容量控制：最多保存 50 条
+- `[DONE]` 实现 API 调用失败的重试机制
+  - 位置：`client/src/lib/queryClient.ts` 的 mutations 配置
+  - 结果：
+    - 最多重试 2 次，指数退避策略（1s, 2s）
+    - 超时错误和网络错误会重试
+    - HTTP 4xx/5xx 错误不重试
+    - 自动应用到所有 mutations
 
-- `[TODO]` 添加历史记录查看界面
-  - 位置：新建 `client/src/components/history-panel.tsx`
-  - UI：侧边抽屉或模态框
-  - 功能：浏览、搜索、删除历史记录
+- `[DONE]` 添加 React Error Boundary
+  - 位置：新建 `error-boundary.tsx` + `client/src/App.tsx`
+  - 结果：
+    - 创建 ErrorBoundary 类组件捕获渲染错误
+    - 显示友好的错误界面（图标 + 错误详情）
+    - 提供刷新和返回首页操作
+    - 开发环境显示完整错误栈
 
-- `[TODO]` 实现导出为 Markdown 功能
-  - 位置：导出逻辑在 `client/src/lib/export.ts`
-  - 格式：按日期分组，包含输入和输出
-  - 触发：下载按钮触发文件下载
-
-- `[TODO]` 实现导出为 JSON 功能
-  - 格式：完整的数据结构，方便导入
-  - 用途：备份或在其他工具中使用
-
-### M4: 稳定性增强（待开始）📋
-
-- `[TODO]` 为 AI 调用添加超时配置
-  - 位置：`client/src/lib/queryClient.ts`
-  - 配置：TanStack Query 的 timeout 选项
-  - 建议：30 秒超时
-
-- `[TODO]` 实现 API 调用失败的重试机制
-  - 位置：TanStack Query mutation 配置
-  - 策略：最多重试 2 次，指数退避
-  - 条件：仅网络错误重试，4xx 错误不重试
-
-- `[TODO]` 添加 React Error Boundary
-  - 位置：`client/src/App.tsx` 包裹主要组件
-  - 功能：捕获渲染错误，显示友好界面
-  - 参考：Shadcn UI 的错误处理模式
-
-- `[TODO]` 完善服务端日志记录
-  - 位置：`server/routes.ts` 两个端点
-  - 内容：记录请求参数、响应时间、错误详情
-  - 工具：console.log + 时间戳（Replit 可查看）
+- `[DONE]` 完善服务端日志记录
+  - 位置：新建 `server/lib/logger.ts` + `server/routes.ts`
+  - 结果：
+    - 创建结构化日志工具（带时间戳 + 上下文）
+    - 记录 API 请求开始、成功、失败
+    - 记录响应时间和结果数量
+    - 开发环境显示详细参数，生产环境仅关键信息
 
 ## 2. 已完成任务（归档）
 

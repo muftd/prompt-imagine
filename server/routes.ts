@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { openai } from "./lib/openai";
 import { getMagicWordPrompt, getTensionSeedPrompt } from "./lib/prompts";
+import { logger } from "./lib/logger";
 import {
   magicWordRequestSchema,
   magicWordResponseSchema,
@@ -15,15 +16,25 @@ import { fromZodError } from "zod-validation-error";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Magic Word generation endpoint
   app.post("/api/magic-words", async (req, res) => {
+    const startTime = Date.now();
+    const endpoint = "/api/magic-words";
+
     try {
       // Validate request body
       const result = magicWordRequestSchema.safeParse(req.body);
       if (!result.success) {
         const validationError = fromZodError(result.error);
+        logger.warn("验证失败", { endpoint, error: validationError.message });
         return res.status(400).json({ error: validationError.message });
       }
 
       const { taskDescription, styleIntent, temperature } = result.data;
+
+      logger.apiStart(endpoint, {
+        taskDescriptionLength: taskDescription.length,
+        hasStyleIntent: !!styleIntent,
+        temperature,
+      });
 
       // Generate prompt
       const prompt = getMagicWordPrompt(taskDescription, styleIntent, temperature);
@@ -100,9 +111,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      const duration = Date.now() - startTime;
+      logger.apiSuccess(endpoint, duration, parsedResponse.magicWords.length);
       return res.json(parsedResponse);
     } catch (error: any) {
-      console.error("Error generating magic words:", error);
+      const duration = Date.now() - startTime;
+      logger.apiError(endpoint, duration, error);
       return res.status(500).json({
         error: "Failed to generate magic words",
         details: error.message,
@@ -112,15 +126,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Tension Seeds generation endpoint
   app.post("/api/tension-seeds", async (req, res) => {
+    const startTime = Date.now();
+    const endpoint = "/api/tension-seeds";
+
     try {
       // Validate request body
       const result = tensionSeedRequestSchema.safeParse(req.body);
       if (!result.success) {
         const validationError = fromZodError(result.error);
+        logger.warn("验证失败", { endpoint, error: validationError.message });
         return res.status(400).json({ error: validationError.message });
       }
 
       const { theme, tensionAxes, temperature } = result.data;
+
+      logger.apiStart(endpoint, {
+        themeLength: theme.length,
+        axesCount: tensionAxes.length,
+        temperature,
+      });
 
       // Filter out empty tension axes
       const validAxes = tensionAxes.filter((axis) => axis.trim().length > 0);
@@ -208,9 +232,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      const duration = Date.now() - startTime;
+      logger.apiSuccess(endpoint, duration, parsedResponse.tensionSeeds.length);
       return res.json(parsedResponse);
     } catch (error: any) {
-      console.error("Error generating tension seeds:", error);
+      const duration = Date.now() - startTime;
+      logger.apiError(endpoint, duration, error);
       return res.status(500).json({
         error: "Failed to generate tension seeds",
         details: error.message,
