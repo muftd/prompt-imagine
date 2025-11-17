@@ -40,10 +40,13 @@
     - 所有验证错误信息中文化
     - 表单添加实时字符计数器，带颜色编码（正常/警告/错误）
 
-- `[TODO]` 改进加载状态的视觉反馈
-  - 位置：`client/src/components/magic-word-atelier.tsx` + `tension-seeds-studio.tsx`
-  - 方案：添加骨架屏（skeleton）或进度条
-  - 参考：Shadcn UI 的 Skeleton 组件
+- `[DONE]` 改进加载状态的视觉反馈
+  - 位置：新建 `loading-skeleton.tsx` + 两个 atelier 组件
+  - 结果：
+    - 创建 LoadingSkeleton 和 TensionSeedSkeleton 组件
+    - 模拟真实卡片结构（badge、文本、代码块）
+    - 替换原有的简单旋转动画
+    - 保持渐进式加载动画（stagger effect）
 
 - `[TODO]` 优化错误提示的友好度
   - 位置：两个 atelier 组件的 `onError` 回调

@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { TemperatureControl } from "@/components/temperature-control";
 import { TensionSeedCard } from "@/components/tension-seed-card";
+import { TensionSeedSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { tensionSeedRequestSchema, type TensionSeed, type TensionSeedResponse } from "@shared/schema";
@@ -287,15 +288,13 @@ export function TensionSeedsStudio() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center min-h-[400px]"
+                className="space-y-6"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-violet-400 rounded-full blur-2xl opacity-30 animate-pulse" />
-                  <div className="relative p-6 bg-gradient-to-br from-purple-500/10 to-violet-400/10 rounded-full">
-                    <Zap className="w-12 h-12 text-purple-500 animate-pulse" />
-                  </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Zap className="w-5 h-5 text-purple-500 animate-pulse" />
+                  <h3 className="text-xl font-semibold">正在生成张力种子...</h3>
                 </div>
-                <p className="mt-6 text-lg text-muted-foreground">正在生成张力种子...</p>
+                <TensionSeedSkeleton count={3} />
               </motion.div>
             )}
 

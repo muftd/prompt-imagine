@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { TemperatureControl } from "@/components/temperature-control";
 import { MagicWordCard } from "@/components/magic-word-card";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { magicWordRequestSchema, type MagicWord, type MagicWordResponse } from "@shared/schema";
@@ -227,15 +228,13 @@ export function MagicWordAtelier() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center min-h-[400px]"
+                className="space-y-6"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full blur-2xl opacity-30 animate-pulse" />
-                  <div className="relative p-6 bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full">
-                    <Sparkles className="w-12 h-12 text-emerald-500 animate-spin" />
-                  </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <Sparkles className="w-5 h-5 text-emerald-500 animate-pulse" />
+                  <h3 className="text-xl font-semibold">正在施展魔法...</h3>
                 </div>
-                <p className="mt-6 text-lg text-muted-foreground">正在施展魔法...</p>
+                <LoadingSkeleton count={3} variant="magic" />
               </motion.div>
             )}
 
